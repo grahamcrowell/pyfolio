@@ -1,4 +1,4 @@
-    Description,Symbol,Transaction Date,Settlement Date,Account Currency,Type,Quantity,Currency of Price,Price,Settlement Amount
+Description,Symbol,Transaction Date,Settlement Date,Account Currency,Type,Quantity,Currency of Price,Price,Settlement Amount
 ISHARES 1 TO 3 YEAR TREASURY BOND ETF DIST      ON       4 SHS REC 12/29/14 PAY 12/31/14      , ,31-Dec-2014,31-Dec-2014,CAD,CASH DIV,0.00,CAD,0.000,0.15,
 GOLDMAN SACHS GROUP INC CASH DIV  ON       1 SHS REC 12/02/14 PAY 12/30/14      , ,30-Dec-2014,30-Dec-2014,CAD,STOCKDIV,0.00,CAD,0.000,0.69,
 VANGUARD INDEX FUNDS VANGUARD TOTAL STOCK MARKET ETF CASH DIV  ON     100 SHS REC 12/24/14 PAY 12/29/14      , ,29-Dec-2014,29-Dec-2014,CAD,STOCKDIV,0.00,CAD,0.000,64.57,

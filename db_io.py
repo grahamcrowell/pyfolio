@@ -32,6 +32,7 @@ create_trans_stmt = '''CREATE TABLE IF NOT EXISTS trans (desc text, symbol text,
 upload_trans_stmt = '''INSERT OR IGNORE INTO trans VALUES (?,?,?,?,?,?,?,?,?,?)'''
 select_trans_stmt = '''SELECT * FROM trans WHERE {}=?'''.format
 select_trans_stmt = '''SELECT * FROM trans WHERE symbol=?'''
+select_alltrans_stmt = '''SELECT * FROM trans'''
 delete_trans_stmt = '''DROP TABLE trans'''
 
 _con = None
