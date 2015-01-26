@@ -1,0 +1,5 @@
+git init
+get add /Users/grahamcrowell/Dropbox/DOCS/shan_rrsp/pyfolio 
+git commit -m "first commit"
+git remote add origin https://github.com/grahamcrowell/pyfolio.git
+git push -u origin master
