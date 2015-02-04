@@ -1,6 +1,8 @@
 __author__ = 'grahamcrowell'
 
-# todo is numpy required/beneficial?
+# TODO: is numpy required/beneficial?
+# TODO: consolidate transaction types
+
 
 import datetime
 import itertools
@@ -61,6 +63,11 @@ def pprint(_arr):
 
 cash_symbol = '<cash>'
 fee_symbol = '<fee>'
+wash_symbol = '<wash>'
+# ['BUY' 'CASH DIV' 'CASHINLIEU' 'CNCL SELL' 'Dividend' 'EXCHADJ' 'Exchange', 'FEE' 'Funds Transfer' 'GST' 'HST' 'MERGER' 'NAMECHG' 'REVERSE' 'SELL', 'STOCKDIV' 'TGL' 'TRANSFER' 'Transfer In' 'Trust Dividend']
+# CASH DIV = Dividend = STOCKDIV = Trust Dividend
+dividend_type = 'DIV'
+wash_type = 'WASH'
 
 
 def extract_date_rrsp(_dt_str):
@@ -126,6 +133,11 @@ def voodoo_fill(_arr, sub_len=3):
     :param sub_len: number of words to match in desc column
     :return:
     """
+    # ***
+    # desc starting with "AS OF 12/15/09" are WRONGLY given symbol GAS
+    # this is correctly manually in ad_hoc_fill
+    # ***
+
     cnt = np.sum((_arr['symbol'] == ' '))
     print('\tvoodoo symbol fill ({} missing, sub_len={})'.format(cnt, sub_len))
     # get all complete rows
@@ -156,26 +168,68 @@ def voodoo_fill(_arr, sub_len=3):
 def ad_hoc_fill(_arr):
     cnt = np.sum((_arr['symbol'] == ' '))
     print('\tad hoc symbol fill ({} missing)'.format(cnt))
-    _arr['symbol'][np.where(_arr['type'] == 'Funds Transfer')] = cash_symbol
-    _arr['symbol'][np.where(_arr['type'] == 'CASHINLIEU')] = cash_symbol
-    _arr['symbol'][np.where(_arr['type'] == 'HST')] = fee_symbol
-    _arr['symbol'][np.where(_arr['type'] == 'GST')] = fee_symbol
-    _arr['symbol'][np.where(_arr['type'] == 'TGL')] = fee_symbol
-    _arr['symbol'][np.where(_arr['desc'] == 'BLACKBERRY LTD COM RESULT OF NAME CHANGE      ')] = 'RIM'
+    # handle name changes
+    _arr['symbol'][np.where(_arr['desc'] == 'BLACKBERRY LTD COM RESULT OF NAME CHANGE      ')] = 'BB.TO'
+    _arr['symbol'][np.where(_arr['symbol'] == 'RIM')] = 'BB.TO'
     _arr['symbol'][np.where(_arr['desc'] == 'ISHARES NATURAL GAS COMMODITY INDEX FD COM UNIT RESULT OF NAME CHANGE      ')] = 'GAS'
+    _arr['symbol'][np.where(_arr['desc'] == 'ISHARES BROAD COMMODITY INDEX FD CAD HEDGED COM UNIT AS OF 11/30/12 SHRS RECEIVED THRU MERGER      ')] = 'CBR'
+    _arr['symbol'][np.where(_arr['desc'] == 'ISHARES S&P/TSX INCOME TRUST INDEX FUND RESULT OF NAME CHANGE      ')] = 'XTR'
+    _arr['symbol'][np.where(_arr['desc'] == 'ISHARES CDN S&P/TSX INCOME TRUST INDEX FUND DIST      ON    1000 SHS REC 03/30/10 PAY 03/31/10      ')] = 'XTR'
+    # delete meaningless transactions
+    _arr = np.delete(_arr, np.where(_arr['type'] == 'ADJUSTMENT'))
+    _arr = np.delete(_arr, np.where(_arr['type'] == 'Exchange'))
+    # handle partial dividends resulting from internal iTrade account change over
+    _arr['symbol'][np.where(_arr['desc'] == 'AS OF 12/15/09 DIV    COCA COLA CO      ')] = 'KO'
+    _arr['symbol'][np.where(_arr['desc'] == 'AS OF 12/15/09 DIV    TIM HORTONS INC      ')] = 'THI'
+    _arr['symbol'][np.where(_arr['desc'] == 'AS OF 12/15/09 DIV    TESORO CORPORATION      ')] = 'TSO'
+    _arr['symbol'][np.where(_arr['desc'] == 'AS OF 12/11/09 DIV    SPEEDWAY MOTOR SPORT      ')] = 'TRK'
+    _arr['symbol'][np.where(_arr['desc'] == 'AS OF 12/10/09 DIV    ELI LILLY & CO      ')] = 'LLY'
+    _arr['symbol'][np.where(_arr['desc'] == 'AS OF 12/07/09 DIV    ISHARES BARC 1-3 YR      ')] = 'SHY'
+    _arr['symbol'][np.where(_arr['desc'] == 'AS OF 01/04/10 DIV    HUSKY ENERGY INC      ')] = 'HSE'
+    _arr['type'][np.where(_arr['type'] == 'TRANSFER')] = dividend_type
+
+    # set symbol = cash_symbol for all cash transactions
+    _arr['symbol'][np.where(_arr['type'] == 'HST')] = cash_symbol
+    _arr['symbol'][np.where(_arr['type'] == 'GST')] = cash_symbol
     _arr['symbol'][_arr['desc'] == 'CASH TRANSFER      '] = cash_symbol
+    # consolidate dividend transactions
+    # CASH DIV = Dividend = STOCKDIV = Trust Dividend => dividend_type
+    _arr['type'][np.where(_arr['type'] == 'CASH DIV')] = dividend_type
+    _arr['type'][np.where(_arr['type'] == 'Dividend')] = dividend_type
+    _arr['type'][np.where(_arr['type'] == 'STOCKDIV')] = dividend_type
+    _arr['type'][np.where(_arr['type'] == 'Trust Dividend')] = dividend_type
+
+    # todo handle wash trade transactions
+    # Funds Transfer = TGL => wash_type
+    _arr['symbol'][np.where(_arr['type'] == 'Funds Transfer')] = cash_symbol
+    _arr['type'][np.where(_arr['type'] == 'Funds Transfer')] = wash_type
+    _arr['symbol'][np.where(_arr['type'] == 'TGL')] = cash_symbol
+    _arr['type'][np.where(_arr['type'] == 'TGL')] = wash_type
+
+    # todo handle GAS -> CBL merger (CASHINLIEU)
+    _arr['symbol'][np.where(_arr['type'] == 'CASHINLIEU')] = cash_symbol
+    _arr['type'][np.where(_arr['type'] == 'CASHINLIEU')] = 'MERGER'
+
+    # todo handle splits:  type=EXCHADJ (one to many) or type=REVERSE (many to one)
+
+    # wash trades and mergers consist of multiple transactions
+    # todo create model/object for multi-transaction events that can be extended to option straegies (eg convered calls etc)
+
     cnt2 = np.sum(_arr['symbol'] == ' ')
     print('\t\t{} symbols added ({} still empty)'.format(cnt - cnt2, cnt2))
+    return _arr
 
 
 def symbol_fill(_arr):
     # todo handle remaining empty symbol rows
     print('symbol fill')
-    ad_hoc_fill(_arr)
-    voodoo_fill(_arr, 3)
-    voodoo_fill(_arr, 2)
-    cnt2 = np.sum(_arr['symbol'] == ' ')
+    arr = ad_hoc_fill(_arr)
+    voodoo_fill(arr, 3)
+    voodoo_fill(arr, 2)
+    arr = ad_hoc_fill(arr)
+    cnt2 = np.sum(arr['symbol'] == ' ')
     print('{} symbols still empty'.format(cnt2))
+    return arr
 
 
 def upload_trans_data(_data):
@@ -188,23 +242,6 @@ def upload_trans_data(_data):
     db_io.cur().executemany(db_io.upload_trans_stmt, _data)
 
 
-def rebuild_trans_table():
-    print('* * * remaking trans table')
-    user = raw_input('\tall trans data will be lost.\n\t\tENTER T to confirm')
-    if user.upper() == 'T':
-        db_io.cur().execute(db_io.delete_trans_stmt)
-        db_io.con().commit()
-        print('\ttable deleted')
-        db_io.init_db()
-        ts = load_rrsp_csv_trans()
-        symbol_fill(ts)
-        data = ts.tolist()
-        upload_trans_data(data)
-        print('\ttable rebuilt and re-uploaded')
-    else:
-        print('\ttable not delete, left as is')
-
-
 def load_trans_data(**darg):
     key, val = darg.items()[0]
     sql_stmt = db_io.select_trans_stmt(key), (val,)
@@ -212,7 +249,7 @@ def load_trans_data(**darg):
     return db_io.cur().execute(unicode(sql_stmt)).fetchall()
 
 
-def load_trans_data(_symbol=None):
+def np_load_trans_data(_symbol=None):
     if _symbol is None:
         trans_list = db_io.cur().execute(db_io.select_alltrans_stmt).fetchall()
         return np.array(trans_list, dtype=db_tran_dtype)
@@ -221,7 +258,7 @@ def load_trans_data(_symbol=None):
     # print(sql_stmt)
     # return db_io.cur().execute(unicode(sql_stmt)).fetchall()
     else:
-        return db_io.cur().execute(db_io.select_trans_stmt, (_symbol,)).fetchall()
+        return np.array(db_io.cur().execute(db_io.select_trans_stmt, (_symbol,)).fetchall(), dtype=db_tran_dtype)
 
 
 def dtype2csv(row):
@@ -241,12 +278,46 @@ def save_rrsp_csv_trans(_arr):
             inline = '{},{},{},{},{},{},{},{},{},{}'.format(*tran.tolist())
             outline = dtype2csv(inline) + '\n'
             csv_file.write(outline)
+    print('\tdata saved to CSV:\n\t\t{}'.format(out_rrsp_csv_file))
+
+
+def rebuild_trans_data():
+    print('* * * remaking trans table')
+    user = raw_input('\tall trans data will be lost.\n\t\tENTER T to confirm')
+    if user.upper() == 'T':
+        db_io.cur().execute(db_io.delete_trans_stmt)
+        db_io.con().commit()
+        print('\ttable deleted')
+        db_io.init_db()
+        ts = load_rrsp_csv_trans()
+        ts = symbol_fill(ts)
+        data = ts.tolist()
+        upload_trans_data(data)
+        print('\ttable rebuilt and re-uploaded')
+        user = raw_input('\tsave data to csv?.\n\t\tENTER T to confirm')
+        if user.upper() == 'T':
+            save_rrsp_csv_trans(ts)
+        else:
+            print('\tCSV not saved')
+    else:
+        print('\ttable not deleted, left as is')
 
 
 if __name__ == '__main__':
-    # ts = load_rrsp_csv_trans()
-    # symbol_fill(ts)
-    # save_rrsp_csv_trans(ts)
+    # TEST DATA LOADERS
+    tmp = np_load_trans_data(_symbol='RIM')
+    print(len(tmp), type(tmp))
+    tmp = np_load_trans_data()
+    print(len(tmp), type(tmp))
+    # tmp = namedtuple_load_trans_data()
+    # print(len(tmp), type(tmp))
+
+    # REBUILD DATABASE AND CSV BACKUP
+    rebuild_trans_data()
+
+    # PRINT ALL Transaction type's
+    types = np.unique(np_load_trans_data()['type'])
+    print(types)
 
     # ts = load_trans_data()
     # print(str(ts['trans_date'][0]))
@@ -258,5 +329,5 @@ if __name__ == '__main__':
     # print(np.get_printoptions())
     # rebuild_trans_table()
     # db_io.dump_db()
-    # db_io.clean_up()
+    db_io.clean_up()
     pass
