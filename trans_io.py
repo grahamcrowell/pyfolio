@@ -14,6 +14,8 @@ import db_io
 
 user = 'T'
 
+
+
 rrsp_csv_name = "transactionHistory_all_all_all.csv"
 print('csv transaction history file:\n\t{}\n'.format(rrsp_csv_name))
 rrsp_csv_file = os.path.join(db_io.data_dir_path, rrsp_csv_name)
@@ -63,9 +65,9 @@ def pprint(_arr):
 
 # np.set_string_function(pprint, repr=False)
 
-cash_symbol = '<cash>'
-fee_symbol = '<fee>'
-wash_symbol = '<wash>'
+cash_symbol = '$cash'
+fee_symbol = '$fee'
+wash_symbol = '$wash'
 # ['BUY' 'CASH DIV' 'CASHINLIEU' 'CNCL SELL' 'Dividend' 'EXCHADJ' 'Exchange', 'FEE' 'Funds Transfer' 'GST' 'HST' 'MERGER' 'NAMECHG' 'REVERSE' 'SELL', 'STOCKDIV' 'TGL' 'TRANSFER' 'Transfer In' 'Trust Dividend']
 # CASH DIV = Dividend = STOCKDIV = Trust Dividend
 dividend_type = 'DIV'
@@ -209,7 +211,7 @@ def ad_hoc_fill(_arr):
     _arr['type'][np.where(_arr['type'] == 'TGL')] = wash_type
 
     _arr['type'][np.where(_arr['type'] == 'Transfer In')] = deposit_type
-    # _arr['qty'][np.where(_arr['type'] == deposit_type)] = -_arr['qty'][np.where(_arr['type'] == deposit_type)]
+    _arr['qty'][np.where(_arr['type'] == deposit_type)] = -_arr['qty'][np.where(_arr['type'] == deposit_type)]
 
     # todo handle GAS -> CBL merger (CASHINLIEU)
     _arr['symbol'][np.where(_arr['type'] == 'CASHINLIEU')] = cash_symbol
@@ -285,32 +287,10 @@ def save_rrsp_csv_trans(_arr):
             csv_file.write(outline)
     print('\tdata saved to CSV:\n\t\t{}'.format(out_rrsp_csv_file))
 
-
-def rebuild_trans_data():
-    print('* * * remaking trans table')
-    print('\tall trans data will be lost.\n\t\tENTER T to confirm')
-    if user.upper() == 'T':
-        db_io.cur().execute(db_io.delete_trans_stmt)
-        db_io.con().commit()
-        print('\ttable deleted')
-        db_io.init_db()
-        ts = load_rrsp_csv_trans()
-        ts = symbol_fill(ts)
-        data = ts.tolist()
-        upload_trans_data(data)
-        print('\ttable rebuilt and re-uploaded')
-        print('\tsave data to csv?.\n\t\tENTER T to confirm')
-        if user.upper() == 'T':
-            save_rrsp_csv_trans(ts)
-        else:
-            print('\tCSV not saved')
-    else:
-        print('\ttable not deleted, left as is')
-
 def dtype2cleancsv(row):
     # ISHARES 1 TO 3 YEAR TREASURY BOND ETF DIST      ON       4 SHS REC 12/29/14 PAY 12/31/14      , ,31-Dec-2014,31-Dec-2014,CAD,CASH DIV,0.00,CAD,0.000,0.15,
     tkns = row.split(',')
-    print(tkns)
+    # print(tkns)
     tran_date_str = tkns[2]
     tran_date_str = datetime.datetime.strptime(tkns[2], iso_datetime_format).date().strftime(rrsp_date_format)
     sett_date_str = tkns[3]
@@ -328,14 +308,44 @@ def save_clean_csv(_arr):
             csv_file.write(outline)
     print('\tdata saved to CSV:\n\t\t{}'.format(out_rrsp_csv_file))
 
-if __name__ == '__main__':
+def rebuild_trans_data():
+    print('* * * remaking trans table')
+    print('\tall trans data will be lost.\n\t\tENTER T to confirm')
+    if user.upper() == 'T':
+        db_io.cur().execute(db_io.delete_trans_stmt)
+        db_io.con().commit()
+        print('\ttable deleted')
+        db_io.init_db()
+        ts = load_rrsp_csv_trans()
+        ts = symbol_fill(ts)
+        data = ts.tolist()
+        upload_trans_data(data)
+        print('\ttable rebuilt and re-uploaded')
+        print('\tsave data to csv?.\n\t\tENTER T to confirm')
+        if user.upper() == 'T':
+            save_rrsp_csv_trans(ts)
+            np_ts = np_load_trans_data()
+            save_clean_csv(np_ts)
+        else:
+            print('\tCSV not saved')
+    else:
+        print('\ttable not deleted, left as is')
+
+
+
+def test():
+    pass
     # TEST DATA LOADERS
-    tmp = np_load_trans_data(_symbol='RIM')
-    print(len(tmp), type(tmp))
-    tmp = np_load_trans_data()
-    print(len(tmp), type(tmp))
+    # tmp = np_load_trans_data(_symbol='RIM')
+    # print(len(tmp), type(tmp))
+    # tmp = np_load_trans_data()
+    # print(len(tmp), type(tmp))
     # tmp = namedtuple_load_trans_data()
     # print(len(tmp), type(tmp))
+
+
+if __name__ == '__main__':
+
 
     # REBUILD DATABASE AND CSV BACKUP
     rebuild_trans_data()
@@ -344,8 +354,7 @@ if __name__ == '__main__':
     # types = np.unique(np_load_trans_data()['type'])
     # print(types)
 
-    ts = np_load_trans_data()
-    save_clean_csv(ts)
+    
 
     db_io.clean_up()
     pass

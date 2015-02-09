@@ -13,37 +13,30 @@ import trans_io
 """
 Abstract container for time series data
 """
-Transaction = collections.namedtuple('Transaction', ['desc', 'symbol', 'trans_date', 'settle_date', 'acct_currency', 'type', 'qty', 'price_currency', 'price', 'amount'], verbose=False)
+
+def print_list(L):
+    s = ''
+    i = 0
+    num_wid = str(len(str(len(L))))
+    _format = '{: '+num_wid+'.0f} {}'
+    for i in range(len(L)):
+        print(_format.format(i,L[i]))
 
 
-def namedtuple_load_trans_data(_symbol=None):
-    if _symbol is None:
-        trans_list = db_io.cur().execute(db_io.select_alltrans_stmt).fetchall()
-        return list(map(lambda transaction: Transaction(*transaction), trans_list))
-    # key,val = darg.items()[0]
-    # sql_stmt = db_io.select_trans_stmt(key), (val,)
-    # print(sql_stmt)
-    # return db_io.cur().execute(unicode(sql_stmt)).fetchall()
-    else:
-        trans_list = db_io.cur().execute(db_io.select_trans_stmt, (_symbol,)).fetchall()
-        return list(map(lambda transaction: Transaction(*transaction), trans_list))
+class Datum(object):
+    """ base class for time series data point """
+    
+    def __init__(self, year, month, day, dpt):
+        # datetime.date.__init__(year=year,month=month,day=day)
+        self.dt = datetime.date(year=year,month=month,day=day)
+        self.dpt = dpt
 
 
-# class Transaction(object):
-# def __init__(self, _desc, _symbol, _trans_date, _settle_date, _acct_currency, _type, _qty, _price_currency, _price, _amount):
-# self.desc = _desc
-# self.symbol = _symbol
-# self.trans_date = _trans_date
-# self.settle_date = _settle_date
-#         self.acct_currency = _acct_currency
-#         self.type = _type
-#         self.qty = _qty
-#         self.price_currency = _price_currency
-#         self.price = _price
-#         self.amount = _amount
-
-class Transaction:
+class Transaction(Datum):
+    col_names = ['desc', 'symbol', 'trans_date', 'settle_date', 'acct_currency', 'type', 'qty', 'price_currency', 'price', 'amount']
+    
     def __init__(self, desc, symbol, trans_date, settle_date, acct_currency, type, qty, price_currency, price, amount):
+        Datum.__init__(self,year=trans_date.year,month=trans_date.month,day=trans_date.day, dpt=amount)
         self.desc = str(desc)
         self.symbol = str(symbol)
         self.trans_date = trans_date
@@ -84,48 +77,92 @@ class Transaction:
         return _format.format(**self.__dict__)
 
     def __repr__(self):
-        _format = '{trans_date}  {symbol: <7s}  {type: >8s}'
+        _format = '{symbol: <5s} {type: >8s} {trans_date}'
         return '<'+_format.format(**self.__dict__)+'>'
 
     def __eq__(self, other):
         # return self.symbol == other.symbol and self.trans_date == other.trans_date and self.type == other.type and
         return str(self) == str(other)
+
     def __getitem__(self,arg):
         return self.__dict__[arg]
 
-class Portfolio(list):
-    """docstring for Portfolio"""
-    def __init__(self, _list):
-        super(Portfolio, self).__init__(map(lambda tran: Transaction(*tran),_list))
+    @classmethod
+    def names(cls):
+        return cls.col_names
+
+class TimeSeriesTrans(list):
+    """ time series container of Transaction object """
+    
+    def __init__(self, _list=None):
+        if _list is None:
+            _list = db_io.cur().execute(db_io.select_alltrans_stmt).fetchall()
+        super(TimeSeriesTrans, self).__init__(map(lambda tran: Transaction(*tran),_list))
+    
     def __getitem__(self,arg):
+        if isinstance(arg,str):
+            if arg in TimeSeriesTrans.names():
+                return map(lambda tran: tran[arg], self)
+            else:
+                raise NotImplimentedError()
+        elif isinstance(arg,datetime.date):
+            return itertools.ifilter(lambda tran: tran.dt < arg)
+        elif isinstance(arg,datetime.datetime):
+            return itertools.ifilter(lambda tran: tran.dt < arg.date())
+        elif isinstance(arg,int):
+            return super(TimeSeriesTrans, self).__getitem__(arg)
+            # return portfolio after initial deposits
+            # return self.get(type='DEPOSIT')
+            # [trans for trans in self if trans.trans_date < arg]
+    
+    def __str__(self):
+        return '\n'.join(map(str,self))
+
+    @classmethod
+    def names(cls):
+        return Transaction.col_names
+
+    def get_col(self,arg):
+        """ return column with name arg """
         return map(lambda tran: tran[arg], self)
+    
     def get(self,**dargs):
         return itertools.ifilter(lambda tran: tran[dargs.keys()[0]] == dargs.values()[0], self)
-    def foo(self,arg):
-        if isinstance(arg,datetime.datetime):
-            arg = arg.date()
-        I = [i for i in range(len(self)) if self[i].trans_date < arg]
-        print(I)
-        dts = [dt for dt in self.dates if dt < arg]
-        print(dts)
-        trans = [trans for trans in self if trans.trans_date < arg]
-        print(trans)
-        print(len(trans))
-        print(arg)
+    
+    def ts_foo(self):
+        i = len(self) - 1
+        print(self[i]['type'])
+        tmp_trans = []
+        trans_dict = {}
+        while self[i]['type'] == trans_io.deposit_type:
+            tmp_trans.append(self[i])
+            print(self[i])
+            i-=1
+        trans_dict[self[i+1].dt] = tmp_trans
+
+        print(trans_dict)
+
+
+
+    # def foo(self,arg):
+    #     if isinstance(arg,datetime.datetime):
+    #         arg = arg.date()
+    #     I = [i for i in range(len(self)) if self[i].trans_date < arg]
+    #     print(I)
+    #     dts = [dt for dt in self.dates if dt < arg]
+    #     print(dts)
+    #     trans = [trans for trans in self if trans.trans_date < arg]
+    #     print(trans)
+    #     print(len(trans))
+    #     print(arg)
 
 
 
 
-
-if __name__ == '__main__':
-    print('TimeSeries.py')
-    # ts = namedtuple_load_trans_data()
-    # rim = list(itertools.ifilter(lambda transaction: transaction.symbol == 'RIM',ts))
-    # print(rim)
-    # print(len(rim),type(rim))
-
+def foo():
     trans_list = db_io.cur().execute(db_io.select_alltrans_stmt).fetchall()
     p = Portfolio(trans_list)
+    p = Portfolio()
     p['symbol']
     x = p.get(symbol='XTR')
     print(list(x))
@@ -135,3 +172,18 @@ if __name__ == '__main__':
         print(t)
     # dt = datetime.datetime(year=2009,month=3,day=15)
     # x = p[dt]
+
+
+if __name__ == '__main__':
+    ts = TimeSeriesTrans()
+    print(ts)
+    # print(ts[0])
+    ts.ts_foo()
+    mergers = list(p.get(type='MERGER'))
+    # for merger in mergers:
+        # print(merger)
+        # print(merger.desc)
+    
+
+
+

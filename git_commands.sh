@@ -1,5 +1,5 @@
-!bin
-commit_str="data_structs.py, Portfolio class using functional techniques, clean CSV backups"
+#!/usr/bin/env 
+commit_str="data_structs.py: TimeSeriesTrans, Transaction(Datum) inheritance"
 
 cwd=echo pwd
 git init

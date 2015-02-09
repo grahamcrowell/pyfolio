@@ -43,7 +43,7 @@ def init_db():
     global _con
     global _cur
     if _con is None:
-        print('connecting to {}'.format(db_name))
+        print('connecting to {}\n'.format(db_name))
         _con = sqlite3.connect(db_file, detect_types=sqlite3.PARSE_DECLTYPES)
     if _cur is None:
         _cur = _con.cursor()
