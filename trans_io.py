@@ -12,6 +12,7 @@ import numpy as np
 
 import db_io
 
+user = 'T'
 
 rrsp_csv_name = "transactionHistory_all_all_all.csv"
 print('csv transaction history file:\n\t{}\n'.format(rrsp_csv_name))
@@ -31,6 +32,7 @@ transaction_header = '''Description,Symbol,Transaction Date,Settlement Date,Acco
 rrsp_date_format = "%d-%b-%Y"
 # 2014-07-02
 iso_date_format = "%Y-%m-%d"
+iso_datetime_format = "%Y-%m-%d %H:%M:%S"
 
 
 def pprint(arr):
@@ -68,7 +70,7 @@ wash_symbol = '<wash>'
 # CASH DIV = Dividend = STOCKDIV = Trust Dividend
 dividend_type = 'DIV'
 wash_type = 'WASH'
-
+deposit_type = 'DEPOSIT'
 
 def extract_date_rrsp(_dt_str):
     # 02-Jul-2014
@@ -206,6 +208,9 @@ def ad_hoc_fill(_arr):
     _arr['symbol'][np.where(_arr['type'] == 'TGL')] = cash_symbol
     _arr['type'][np.where(_arr['type'] == 'TGL')] = wash_type
 
+    _arr['type'][np.where(_arr['type'] == 'Transfer In')] = deposit_type
+    # _arr['qty'][np.where(_arr['type'] == deposit_type)] = -_arr['qty'][np.where(_arr['type'] == deposit_type)]
+
     # todo handle GAS -> CBL merger (CASHINLIEU)
     _arr['symbol'][np.where(_arr['type'] == 'CASHINLIEU')] = cash_symbol
     _arr['type'][np.where(_arr['type'] == 'CASHINLIEU')] = 'MERGER'
@@ -283,7 +288,7 @@ def save_rrsp_csv_trans(_arr):
 
 def rebuild_trans_data():
     print('* * * remaking trans table')
-    user = raw_input('\tall trans data will be lost.\n\t\tENTER T to confirm')
+    print('\tall trans data will be lost.\n\t\tENTER T to confirm')
     if user.upper() == 'T':
         db_io.cur().execute(db_io.delete_trans_stmt)
         db_io.con().commit()
@@ -294,7 +299,7 @@ def rebuild_trans_data():
         data = ts.tolist()
         upload_trans_data(data)
         print('\ttable rebuilt and re-uploaded')
-        user = raw_input('\tsave data to csv?.\n\t\tENTER T to confirm')
+        print('\tsave data to csv?.\n\t\tENTER T to confirm')
         if user.upper() == 'T':
             save_rrsp_csv_trans(ts)
         else:
@@ -302,6 +307,26 @@ def rebuild_trans_data():
     else:
         print('\ttable not deleted, left as is')
 
+def dtype2cleancsv(row):
+    # ISHARES 1 TO 3 YEAR TREASURY BOND ETF DIST      ON       4 SHS REC 12/29/14 PAY 12/31/14      , ,31-Dec-2014,31-Dec-2014,CAD,CASH DIV,0.00,CAD,0.000,0.15,
+    tkns = row.split(',')
+    print(tkns)
+    tran_date_str = tkns[2]
+    tran_date_str = datetime.datetime.strptime(tkns[2], iso_datetime_format).date().strftime(rrsp_date_format)
+    sett_date_str = tkns[3]
+    sett_date_str = datetime.datetime.strptime(tkns[3], iso_datetime_format).date().strftime(rrsp_date_format)
+    line = '{},{},{},{},{},{:.2f},{},{:.3f},{:.2f}'.format(tkns[1], tran_date_str, sett_date_str, tkns[4], tkns[5], float(tkns[6]), tkns[7], float(tkns[8]), float(tkns[9]))
+    return line
+
+def save_clean_csv(_arr):
+    out_rrsp_csv_file = os.path.join(db_io.data_dir_path, 'CSV_DATA-{}.csv'.format(datetime.date.today().strftime(iso_date_format)))
+    with open(out_rrsp_csv_file, 'w') as csv_file:
+        csv_file.write(transaction_header + '\n')
+        for tran in _arr:
+            inline = '{},{},{},{},{},{},{},{},{},{}'.format(*tran.tolist())
+            outline = dtype2cleancsv(inline) + '\n'
+            csv_file.write(outline)
+    print('\tdata saved to CSV:\n\t\t{}'.format(out_rrsp_csv_file))
 
 if __name__ == '__main__':
     # TEST DATA LOADERS
@@ -316,18 +341,11 @@ if __name__ == '__main__':
     rebuild_trans_data()
 
     # PRINT ALL Transaction type's
-    types = np.unique(np_load_trans_data()['type'])
-    print(types)
+    # types = np.unique(np_load_trans_data()['type'])
+    # print(types)
 
-    # ts = load_trans_data()
-    # print(str(ts['trans_date'][0]))
-    # print(str(ts))
-    # print(ts.__str__())
-    # print(type(ts))
-    # x = np.arange(10)
-    # print(x)
-    # print(np.get_printoptions())
-    # rebuild_trans_table()
-    # db_io.dump_db()
+    ts = np_load_trans_data()
+    save_clean_csv(ts)
+
     db_io.clean_up()
     pass
