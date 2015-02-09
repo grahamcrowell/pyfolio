@@ -72,7 +72,9 @@ wash_symbol = '$wash'
 # CASH DIV = Dividend = STOCKDIV = Trust Dividend
 dividend_type = 'DIV'
 wash_type = 'WASH'
-deposit_type = 'DEPOSIT'
+deposit_type = 'INI'
+cancel_sell_type = '*SELL'
+merger_type = 'MRG'
 
 def extract_date_rrsp(_dt_str):
     # 02-Jul-2014
@@ -211,11 +213,13 @@ def ad_hoc_fill(_arr):
     _arr['type'][np.where(_arr['type'] == 'TGL')] = wash_type
 
     _arr['type'][np.where(_arr['type'] == 'Transfer In')] = deposit_type
-    _arr['qty'][np.where(_arr['type'] == deposit_type)] = -_arr['qty'][np.where(_arr['type'] == deposit_type)]
+    _arr['qty'][np.where(_arr['type'] == deposit_type)] = np.abs(_arr['qty'][np.where(_arr['type'] == deposit_type)])
 
     # todo handle GAS -> CBL merger (CASHINLIEU)
     _arr['symbol'][np.where(_arr['type'] == 'CASHINLIEU')] = cash_symbol
-    _arr['type'][np.where(_arr['type'] == 'CASHINLIEU')] = 'MERGER'
+    _arr['type'][np.where(_arr['type'] == 'CASHINLIEU')] = merger_type
+
+    _arr['type'][np.where(_arr['type'] == 'CNCL SELL')] = cancel_sell_type
 
     # todo handle splits:  type=EXCHADJ (one to many) or type=REVERSE (many to one)
 
@@ -235,7 +239,7 @@ def symbol_fill(_arr):
     voodoo_fill(arr, 2)
     arr = ad_hoc_fill(arr)
     cnt2 = np.sum(arr['symbol'] == ' ')
-    print('{} symbols still empty'.format(cnt2))
+    # print('{} symbols still empty'.format(cnt2))
     return arr
 
 

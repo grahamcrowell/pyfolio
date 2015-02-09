@@ -1,5 +1,5 @@
 #!/usr/bin/env 
-commit_str="data_structs.py: TimeSeriesTrans, Transaction(Datum) inheritance"
+commit_str="data_structs.py: TimeSeriesTrans.holdings (portfolio output) \ndb_io.py: *.sql and *.db zipped in bkup"
 
 cwd=echo pwd
 git init

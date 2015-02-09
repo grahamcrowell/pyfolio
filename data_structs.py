@@ -33,7 +33,7 @@ class Datum(object):
 
 
 class Transaction(Datum):
-    col_names = ['desc', 'symbol', 'trans_date', 'settle_date', 'acct_currency', 'type', 'qty', 'price_currency', 'price', 'amount']
+    __col_names = ['desc', 'symbol', 'trans_date', 'settle_date', 'acct_currency', 'type', 'qty', 'price_currency', 'price', 'amount']
     
     def __init__(self, desc, symbol, trans_date, settle_date, acct_currency, type, qty, price_currency, price, amount):
         Datum.__init__(self,year=trans_date.year,month=trans_date.month,day=trans_date.day, dpt=amount)
@@ -69,15 +69,17 @@ class Transaction(Datum):
         if self.type in [trans_io.dividend_type,] or self.symbol in [trans_io.cash_symbol,]:
             # YYYY-MM-DD  SYM---  DIV (on ---# SHS)  $--,--#.##
             # _format += '{trans_date}  {symbol: <5s}  {type: <' + str(len(trans_io.dividend_type)) + 's} ' + '{: <15s}'.format('(on {qty:.0f} SHS)') + ' {: >15s}'.format('${amount: >.2f}')
-            _format += '${amount: >8.2f}'
+            _format += ' '*21 + '${amount: >10.2f}'
         elif self.type in ['BUY','SELL']:
             _format += '#{qty: >5.0f} x ${price: >8.2f} = ${amount: >10.2f}'
         elif self.type in [trans_io.deposit_type,]:
-            _format += '#{qty: >5.0f}'
+            _format += '#{qty: >5.0f}' + ' '*26
+        else:
+            _format += ' '*32
         return _format.format(**self.__dict__)
 
     def __repr__(self):
-        _format = '{symbol: <5s} {type: >8s} {trans_date}'
+        _format = '{symbol} {type} {trans_date}'
         return '<'+_format.format(**self.__dict__)+'>'
 
     def __eq__(self, other):
@@ -89,7 +91,7 @@ class Transaction(Datum):
 
     @classmethod
     def names(cls):
-        return cls.col_names
+        return cls.__col_names
 
 class TimeSeriesTrans(list):
     """ time series container of Transaction object """
@@ -97,8 +99,9 @@ class TimeSeriesTrans(list):
     def __init__(self, _list=None):
         if _list is None:
             _list = db_io.cur().execute(db_io.select_alltrans_stmt).fetchall()
-        super(TimeSeriesTrans, self).__init__(map(lambda tran: Transaction(*tran),_list))
-    
+            super(TimeSeriesTrans, self).__init__(map(lambda tran: Transaction(*tran),_list))
+        else:
+            super(TimeSeriesTrans, self).__init__(_list)
     def __getitem__(self,arg):
         if isinstance(arg,str):
             if arg in TimeSeriesTrans.names():
@@ -127,36 +130,96 @@ class TimeSeriesTrans(list):
         return map(lambda tran: tran[arg], self)
     
     def get(self,**dargs):
-        return itertools.ifilter(lambda tran: tran[dargs.keys()[0]] == dargs.values()[0], self)
-    
-    def ts_foo(self):
+        tmp = TimeSeriesTrans(itertools.ifilter(lambda tran: tran[dargs.keys()[0]] == dargs.values()[0], self))
+        return tmp
+
+    def cat(self,trans):
+        self.append(trans)
+        self.sort()
+
+    def holdings(self, dt=None, symbol=None):
+        cash = 0
+        qty = {}
         i = len(self) - 1
-        print(self[i]['type'])
-        tmp_trans = []
-        trans_dict = {}
-        while self[i]['type'] == trans_io.deposit_type:
-            tmp_trans.append(self[i])
-            print(self[i])
+        if dt is None:
+            dt = datetime.datetime.today().date()
+        while self[i]['trans_date'] < dt and i > 0:
+            # print(str(self[i])+' {: >7.2f}'.format(cash))
+            if symbol is None or self[i]['symbol'] == symbol:
+                cash += self[i]['amount']
+                # print(trans_io.deposit_ty pe)
+                if self[i]['type'] in ['BUY', 'SELL', trans_io.deposit_type]:
+                    if self[i]['symbol'] not in qty:
+                        qty[self[i]['symbol']] = self[i]['qty']
+                    else:
+                        qty[self[i]['symbol']] += self[i]['qty']
+                if self[i]['symbol'] in qty and self[i]['symbol'] != trans_io.cash_symbol:
+                    print(str(self[i])+' {: >9.2f} {: 5.0f}'.format(cash,qty[self[i]['symbol']]))
+                else:
+                    print(str(self[i])+' {: >9.2f}'.format(cash))
+                    # print("*** qty ***")
             i-=1
-        trans_dict[self[i+1].dt] = tmp_trans
 
-        print(trans_dict)
+    def book(self,dt=None,symbol=None):
+        # TODO: calculate book value
+        if dt is None:
+            # return current book value
+            dt = None # most last trade day
+        if symbol is None:
+            # return book value of entire portfolio
+            symbol = [None,]
+        return None
+
+    def market(self,dt=None,symbol=None):
+        # TODO: calculate market value
+        if dt is None:
+            # return current market value
+            dt = None # most last trade day
+        if symbol is None:
+            # return market value of entire portfolio
+            symbol = [None,]
+        return None 
+
+    def cash(self, dt=None):
+        # TODO: calculate cash
+        pass 
 
 
 
-    # def foo(self,arg):
-    #     if isinstance(arg,datetime.datetime):
-    #         arg = arg.date()
-    #     I = [i for i in range(len(self)) if self[i].trans_date < arg]
-    #     print(I)
-    #     dts = [dt for dt in self.dates if dt < arg]
-    #     print(dts)
-    #     trans = [trans for trans in self if trans.trans_date < arg]
-    #     print(trans)
-    #     print(len(trans))
-    #     print(arg)
+class Holding(object):
+    __qty_io_names =['BUY', 'SELL', trans_io.deposit_type]
+    def __init__(self, symbol, ts_tran):
+        self.symbol = symbol
+        self.ts = ts_tran
 
+    def __getitem__(self, arg):
+        if arg in self.__dict__.keys():
+            return self.__dict__[arg]
+        elif arg == 'qty':
+            ios = map(lambda tran: tran['qty'],itertools.ifilter(lambda tran: tran.type in Holding.__qty_io_names, self.ts))
+            tot = sum(ios)
+            print(ios,tot)
+            return tot
+        elif arg == 'trans':
+            return self.ts
+        elif arg == 'book':
+            pass
 
+    def __str__(self):
+        return '{} Holding'.format(self.symbol)
+
+class Portfolio:
+    """ snapshot of Portfolio for date dt """
+    def __init__(self, dt, holdings):
+        self.dt = dt
+        self.holdings = holdings
+    def __getitem__(self, arg):
+        if arg in self.__dict__.keys():
+            return self.__dict__[arg]
+        # ????? cash 
+        elif arg == trans_io.cash_symbol:
+            pass    
+            # ?????? ????????
 
 
 def foo():
@@ -176,10 +239,19 @@ def foo():
 
 if __name__ == '__main__':
     ts = TimeSeriesTrans()
-    print(ts)
+    # print(ts)
     # print(ts[0])
-    ts.ts_foo()
-    mergers = list(p.get(type='MERGER'))
+    # ts.ts_foo()
+    # ts.holdings(symbol='RY')
+    ts.holdings()
+    mergers = list(ts.get(type='MERGER'))
+    sym = 'SWY'
+    # cm = ts.get(symbol=sym)
+    # print(cm)
+    # cm_h = Holding(sym, cm)
+    # print(cm_h)
+    # print(cm_h['qty'])
+
     # for merger in mergers:
         # print(merger)
         # print(merger.desc)

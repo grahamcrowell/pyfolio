@@ -3,16 +3,31 @@ __author__ = 'grahamcrowell'
 import datetime
 import sqlite3
 import os
+import zipfile
 
 print('\ncurrent directory:\n\t{}'.format(os.getcwd()))
 data_dir_name = 'data'
-data_dir_path = os.path.join(os.getcwd(), 'data')
+data_dir_path = os.path.join(os.getcwd(), data_dir_name)
 print('data directory:\n\t{}'.format(data_dir_path))
+bkup_dir_name = 'bkup'
+bkup_dir_path = os.path.join(data_dir_path, bkup_dir_name)
+print('bkup directory:\n\t{}'.format(bkup_dir_path))
 
 db_name = 'quant'
 print('database name:\n\t{}\n'.format(db_name))
-db_file = os.path.join(data_dir_path, db_name + '.db')
-db_sql = os.path.join(data_dir_path, db_name + '-{}.sql'.format(datetime.date.today().isoformat()))
+db_filename = db_name + '.db'
+db_rel_path = os.path.join(data_dir_name,db_filename)
+db_fullpath = os.path.join(data_dir_path, db_filename)
+db_file = db_fullpath
+
+sql_name = db_name + '.{}.sql'.format(datetime.date.today().isoformat())
+sql_rel_path = os.path.join(data_dir_name,sql_name)
+sql_fullpath = os.path.join(bkup_dir_path, sql_name)
+
+zip_name = os.path.join(bkup_dir_path, db_name + '.{}.zip'.format(datetime.date.today().isoformat()))
+zip_rel_path = os.path.join(data_dir_name,zip_name)
+db_zip = os.path.join(bkup_dir_path, zip_name)
+
 
 
 """
@@ -91,11 +106,37 @@ def con():
         init_db()
         return _con
 
-
-def dump_db():
-    print('dumping DB to sql file:\n\t{}'.format(db_sql))
+def bkup_db_sql():
+    print('\tsaving {} to {}'.format(db_rel_path,sql_rel_path))
     init_db()
     con().commit()
-    with open(db_sql, 'w') as f:
+    with open(sql_rel_path, 'w') as f:
         for line in con().iterdump():
             f.write('%s\n' % line)
+
+def bkup_db_zip():
+    print('\tsaving {} to {}'.format(db_rel_path,zip_name))
+    # os.chdir(data_dir_path)
+    with zipfile.ZipFile(zip_rel_path, 'w') as myzip:
+        myzip.write(db_rel_path)
+        if not os.path.isfile(sql_rel_path):
+            bkup_db_sql()
+        myzip.write(sql_rel_path)
+    os.remove(sql_rel_path)
+
+
+
+def dump_db():
+    print('dumping DB file: {} . . .'.format(db_rel_path))
+    
+    bkup_db_sql()
+    bkup_db_zip()
+
+
+
+if __name__ == '__main__':
+    dump_db()
+
+    # mtime = os.path.getmtime(path)
+
+
