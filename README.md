@@ -1,11 +1,19 @@
 # pyfolio
 
-todo: pure python price data analysis
-	confirm ability to detect stock splits and divs by comparing close to adjusted close 
+### TODO: 
 
-# todo: consolidate trans_io code
-	save_clean_csv() and save_rrsp_csv_trans()
-	load_trans_data() and np_load_trans_data()
-	convert to pure python, remove numpy dependance
+1. CONVERT to mysql
+..* branch from git hub master?
+..* parrallelize
 
-todo: move to mysql
+2. CONSOLIDATE trans_io code
+..* convert to pure python, remove numpy dependance
+..* save_clean_csv() and save_rrsp_csv_trans()
+..* load_trans_data() and np_load_trans_data()
+
+3. ADD export DB to *.csv
+
+4. ANALYZE price data 
+..*confirm ability to detect stock splits and divs by comparing close to adjusted close 
+
+#### Improve TimeSeries data structure for more flexible analysis.

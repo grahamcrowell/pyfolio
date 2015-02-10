@@ -2,7 +2,9 @@ __author__ = 'grahamcrowell'
 
 import datetime
 import itertools
-
+import collections
+from operator import itemgetter
+dict = collections.OrderedDict
 import db_io
 import trans_io
 import price_io
@@ -165,6 +167,7 @@ class TimeSeriesTrans(TimeSeries):
             super(TimeSeriesTrans, self).__init__(map(lambda tran: Transaction(*tran),_list))
         else:
             super(TimeSeriesTrans, self).__init__(_list)
+        # self.holdings_ts = {}
 
     @classmethod
     def names(cls):
@@ -174,29 +177,41 @@ class TimeSeriesTrans(TimeSeries):
         tmp = TimeSeriesTrans(itertools.ifilter(lambda tran: tran[dargs.keys()[0]] == dargs.values()[0], self))
         return tmp
 
-    def holdings(self, dt=None, symbol=None):
-        cash = 0
-        qty = {}
+    def init_time_series(self):
+        current_cash = 0
+        qty_held = dict()
+        time_series = dict()
         i = len(self) - 1
-        if dt is None:
-            dt = datetime.datetime.today().date()
-        # while self[i]['trans_date'] < dt and i > 0:
-        while self[i]['trans_date'] < dt and i > 0:
-            # print(str(self[i])+' {: >7.2f}'.format(cash))
-            if symbol is None or self[i]['symbol'] == symbol:
-                cash += self[i]['amount']
-                # print(trans_io.deposit_ty pe)
-                if self[i]['type'] in ['BUY', 'SELL', trans_io.deposit_type]:
-                    if self[i]['symbol'] not in qty:
-                        qty[self[i]['symbol']] = self[i]['qty']
-                    else:
-                        qty[self[i]['symbol']] += self[i]['qty']
-                if self[i]['symbol'] in qty and self[i]['symbol'] != trans_io.cash_symbol:
-                    print(str(self[i])+' {: >9.2f} {: 5.0f}'.format(cash,qty[self[i]['symbol']]))
+        curr_date = self[i]['trans_date'] + datetime.timedelta(days=1)
+        while i > 0:
+
+            if self[i]['trans_date'] > curr_date:
+                # transactions on curr_date processed
+                # add all non-zero qty holdings for date curr_date
+                holdings = dict({trans_io.cash_symbol:current_cash})
+                for sym, qty in qty_held.items():
+                    if int(qty) != 0:
+                        # todo: look up market price
+                        holdings[sym] = qty
+                time_series[curr_date] = holdings
+                curr_date = self[i]['trans_date']
+
+            # process transaction
+            current_cash += self[i]['amount']
+            # transaction is a trade or initial deposit
+            if self[i]['type'] in ['BUY', 'SELL', trans_io.deposit_type]:
+                # add symbol to 
+                if self[i]['symbol'] not in qty_held:
+                    qty_held[self[i]['symbol']] = self[i]['qty']
                 else:
-                    print(str(self[i])+' {: >9.2f}'.format(cash))
-                    # print("*** qty ***")
+                    qty_held[self[i]['symbol']] += self[i]['qty']
+            # if self[i]['symbol'] in qty_held and self[i]['symbol'] != trans_io.current_cash_symbol:
+            #     print(str(self[i])+' {: >9.2f} {: 5.0f}'.format(current_cash,qty_held[self[i]['symbol']]))
+            # else:
+            #     # current_cash only transaction
+            #     print(str(self[i])+' {: >9.2f}'.format(current_cash))
             i-=1
+        return time_series
 
     def book(self,dt=None,symbol=None):
         # TODO: calculate book value
@@ -215,18 +230,23 @@ class TimeSeriesTrans(TimeSeries):
 def trans_foo():
     ts = TimeSeriesTrans()
     # print(ts['desc'])
-    print(ts[0])
-    print(ts)
-    ts.holdings(symbol='RY')
-    ts.holdings()
+    # print(ts[0])
+    # print(ts)
+    # ts.holdings(symbol='RY')
+    ts.init_time_series()
+    # print(ts.init_time_series_ts)
+    for dt,holdings in ts.init_time_series().items():
+        print('{}'.format(dt))
+        for sym,qty in holdings.items():
+            print('\t{: <7s} {: >5.0f}'.format(sym,qty))
 
 
 if __name__ == '__main__':
     trans_foo()
-    ts = TimeSeriesTrans()
-    s = 'MSFT'
-    ts = TimeSeriesPrices(s)
-    print(ts)
+    # ts = TimeSeriesTrans()
+    # s = 'MSFT'
+    # ts = TimeSeriesPrices(s)
+    # print(ts)
     pass
 
 
