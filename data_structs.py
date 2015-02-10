@@ -1,26 +1,16 @@
 __author__ = 'grahamcrowell'
 
-import collections
 import datetime
 import itertools
 
-import numpy as np
-
 import db_io
 import trans_io
+import price_io
 
 
 """
-Abstract container for time series data
+Containers for time series data
 """
-
-def print_list(L):
-    s = ''
-    i = 0
-    num_wid = str(len(str(len(L))))
-    _format = '{: '+num_wid+'.0f} {}'
-    for i in range(len(L)):
-        print(_format.format(i,L[i]))
 
 
 class Datum(object):
@@ -30,6 +20,103 @@ class Datum(object):
         # datetime.date.__init__(year=year,month=month,day=day)
         self.dt = datetime.date(year=year,month=month,day=day)
         self.dpt = dpt
+
+    def __lt__(self, other):
+        if isinstance(other, datetime.datetime.date):
+            return self.trans_date < other
+        elif isinstance(other, Datum):
+            return self.trans_date < other.trans_date
+        else:
+            raise Exception('invalid comparison:\n {} < {} ({})'.format(self, other, type(other)))
+
+    def __gt__(self, other):
+        if isinstance(other, datetime.datetime.date):
+            return self.trans_date > other
+        elif isinstance(other, Datum):
+            return self.trans_date > other.trans_date
+        else:
+            raise Exception('invalid comparison:\n {} > {} ({})'.format(self, other, type(other)))
+
+    def __eq__(self, other):
+        # return self.symbol == other.symbol and self.trans_date == other.trans_date and self.type == other.type and
+        return str(self) == str(other)
+
+    def __getitem__(self,arg):
+        return self.__dict__[arg]
+
+    @classmethod
+    def names(cls):
+        return cls.__col_names
+
+
+class TimeSeries(list):
+    """ base class for time series data container """
+    def __init__(self, _list=None):
+        super(TimeSeries, self).__init__(_list)
+
+    def __str__(self):
+        return '\n'.join(map(str,self))
+
+    def __getitem__(self,arg):
+        if isinstance(arg,str):
+            if arg in self.__class__.names():
+                return map(lambda tran: tran[arg], self)
+        elif isinstance(arg,int):
+            return super(TimeSeries, self).__getitem__(arg)
+        else:
+            raise NotImplementedError()
+
+    def get_col(self,arg):
+        """ return column with name arg """
+        return map(lambda element: element[arg], self)
+
+    @classmethod
+    def names(cls):
+        raise NotImplementedError()
+
+
+class OHLC(Datum):
+    __col_names = ['symbol', 'date', 'open', 'high', 'low', 'close', 'volume', 'adj_close']
+   
+    def __init__(self, symbol, date, open, high, low, close, volume, adj_close):
+        
+        Datum.__init__(self,year=date.year,month=date.month,day=date.day, dpt=close)
+        self.symbol = str(symbol)
+        self.date = date
+        self.open = open
+        self.high = high
+        self.low = low
+        self.close = close
+        self.volume = volume
+        self.adj_close = adj_close
+
+    def __repr__(self):
+        return '<'+'{symbol:_<7s}_{date}_{close:_>5.2f}_${adj_close: >5.2f}'.format(**self.__dict__) +'>'
+
+    def __str__(self):
+        return "{symbol: <7s} {date} {open: >10.2f} {high: >10.2f} {low: >10.2f} {close: >10.2f} {volume: >10d} {adj_close: >10.2f}".format(**self.__dict__)
+
+    # def get_tuple(self):
+        return self.symbol, self.date, self.open, self.high, self.low, self.close, self.volume, self.adj_close
+
+
+class TimeSeriesPrices(TimeSeries):
+
+    def __init__(self, arg=None):
+        if arg is None:
+            raise Exception()
+        elif isinstance(arg,str):
+            _list = price_io.load_price_data(arg)
+            super(TimeSeriesPrices, self).__init__(map(lambda element: OHLC(*element),_list))
+        elif isinstance(arg,TimeSeriesPrices):
+            super(TimeSeriesPrices, self).__init__(arg)
+        else:
+            raise Exception()
+
+    @classmethod
+    def get_prices(cls,symbol):
+        price_data = price_io.update_price_data(symbol)
+        return cls(price_data)
 
 
 class Transaction(Datum):
@@ -47,22 +134,6 @@ class Transaction(Datum):
         self.price_currency = str(price_currency)
         self.price = float(price)
         self.amount = float(amount)
-
-    def __lt__(self, other):
-        if isinstance(other, datetime.datetime.date):
-            return self.trans_date < other
-        elif isinstance(other, Transaction):
-            return self.trans_date < other.trans_date
-        else:
-            raise Exception('invalid comparison:\n {} < {} ({})'.format(self, other, type(other)))
-
-    def __gt__(self, other):
-        if isinstance(other, datetime.datetime.date):
-            return self.trans_date > other
-        elif isinstance(other, Transaction):
-            return self.trans_date > other.trans_date
-        else:
-            raise Exception('invalid comparison:\n {} > {} ({})'.format(self, other, type(other)))
 
     def __str__(self):
         _format = '{trans_date}  {symbol: <7s}  {type: <8s}'
@@ -82,19 +153,11 @@ class Transaction(Datum):
         _format = '{symbol} {type} {trans_date}'
         return '<'+_format.format(**self.__dict__)+'>'
 
-    def __eq__(self, other):
-        # return self.symbol == other.symbol and self.trans_date == other.trans_date and self.type == other.type and
-        return str(self) == str(other)
-
-    def __getitem__(self,arg):
-        return self.__dict__[arg]
-
     @classmethod
     def names(cls):
         return cls.__col_names
 
-class TimeSeriesTrans(list):
-    """ time series container of Transaction object """
+class TimeSeriesTrans(TimeSeries):
     
     def __init__(self, _list=None):
         if _list is None:
@@ -102,40 +165,14 @@ class TimeSeriesTrans(list):
             super(TimeSeriesTrans, self).__init__(map(lambda tran: Transaction(*tran),_list))
         else:
             super(TimeSeriesTrans, self).__init__(_list)
-    def __getitem__(self,arg):
-        if isinstance(arg,str):
-            if arg in TimeSeriesTrans.names():
-                return map(lambda tran: tran[arg], self)
-            else:
-                raise NotImplimentedError()
-        elif isinstance(arg,datetime.date):
-            return itertools.ifilter(lambda tran: tran.dt < arg)
-        elif isinstance(arg,datetime.datetime):
-            return itertools.ifilter(lambda tran: tran.dt < arg.date())
-        elif isinstance(arg,int):
-            return super(TimeSeriesTrans, self).__getitem__(arg)
-            # return portfolio after initial deposits
-            # return self.get(type='DEPOSIT')
-            # [trans for trans in self if trans.trans_date < arg]
-    
-    def __str__(self):
-        return '\n'.join(map(str,self))
 
     @classmethod
     def names(cls):
-        return Transaction.col_names
-
-    def get_col(self,arg):
-        """ return column with name arg """
-        return map(lambda tran: tran[arg], self)
+        return Transaction.names()
     
     def get(self,**dargs):
         tmp = TimeSeriesTrans(itertools.ifilter(lambda tran: tran[dargs.keys()[0]] == dargs.values()[0], self))
         return tmp
-
-    def cat(self,trans):
-        self.append(trans)
-        self.sort()
 
     def holdings(self, dt=None, symbol=None):
         cash = 0
@@ -143,6 +180,7 @@ class TimeSeriesTrans(list):
         i = len(self) - 1
         if dt is None:
             dt = datetime.datetime.today().date()
+        # while self[i]['trans_date'] < dt and i > 0:
         while self[i]['trans_date'] < dt and i > 0:
             # print(str(self[i])+' {: >7.2f}'.format(cash))
             if symbol is None or self[i]['symbol'] == symbol:
@@ -162,23 +200,11 @@ class TimeSeriesTrans(list):
 
     def book(self,dt=None,symbol=None):
         # TODO: calculate book value
-        if dt is None:
-            # return current book value
-            dt = None # most last trade day
-        if symbol is None:
-            # return book value of entire portfolio
-            symbol = [None,]
-        return None
+        pass
 
     def market(self,dt=None,symbol=None):
         # TODO: calculate market value
-        if dt is None:
-            # return current market value
-            dt = None # most last trade day
-        if symbol is None:
-            # return market value of entire portfolio
-            symbol = [None,]
-        return None 
+        pass
 
     def cash(self, dt=None):
         # TODO: calculate cash
@@ -186,76 +212,24 @@ class TimeSeriesTrans(list):
 
 
 
-class Holding(object):
-    __qty_io_names =['BUY', 'SELL', trans_io.deposit_type]
-    def __init__(self, symbol, ts_tran):
-        self.symbol = symbol
-        self.ts = ts_tran
-
-    def __getitem__(self, arg):
-        if arg in self.__dict__.keys():
-            return self.__dict__[arg]
-        elif arg == 'qty':
-            ios = map(lambda tran: tran['qty'],itertools.ifilter(lambda tran: tran.type in Holding.__qty_io_names, self.ts))
-            tot = sum(ios)
-            print(ios,tot)
-            return tot
-        elif arg == 'trans':
-            return self.ts
-        elif arg == 'book':
-            pass
-
-    def __str__(self):
-        return '{} Holding'.format(self.symbol)
-
-class Portfolio:
-    """ snapshot of Portfolio for date dt """
-    def __init__(self, dt, holdings):
-        self.dt = dt
-        self.holdings = holdings
-    def __getitem__(self, arg):
-        if arg in self.__dict__.keys():
-            return self.__dict__[arg]
-        # ????? cash 
-        elif arg == trans_io.cash_symbol:
-            pass    
-            # ?????? ????????
-
-
-def foo():
-    trans_list = db_io.cur().execute(db_io.select_alltrans_stmt).fetchall()
-    p = Portfolio(trans_list)
-    p = Portfolio()
-    p['symbol']
-    x = p.get(symbol='XTR')
-    print(list(x))
-    x = p.get(type='DIV')
-    print(list(x))
-    for t in p:
-        print(t)
-    # dt = datetime.datetime(year=2009,month=3,day=15)
-    # x = p[dt]
+def trans_foo():
+    ts = TimeSeriesTrans()
+    # print(ts['desc'])
+    print(ts[0])
+    print(ts)
+    ts.holdings(symbol='RY')
+    ts.holdings()
 
 
 if __name__ == '__main__':
+    trans_foo()
     ts = TimeSeriesTrans()
-    # print(ts)
-    # print(ts[0])
-    # ts.ts_foo()
-    # ts.holdings(symbol='RY')
-    ts.holdings()
-    mergers = list(ts.get(type='MERGER'))
-    sym = 'SWY'
-    # cm = ts.get(symbol=sym)
-    # print(cm)
-    # cm_h = Holding(sym, cm)
-    # print(cm_h)
-    # print(cm_h['qty'])
+    s = 'MSFT'
+    ts = TimeSeriesPrices(s)
+    print(ts)
+    pass
 
-    # for merger in mergers:
-        # print(merger)
-        # print(merger.desc)
-    
+
 
 
 

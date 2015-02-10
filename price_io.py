@@ -9,39 +9,6 @@ import db_io
 """ sqlite3  DATABASE """
 
 
-class OHLC(object):
-    def __init__(self, _symbol, _date, _open, _high, _low, _close, _volume, _adj_close):
-        self.symbol = _symbol
-        self.date = _date
-        self.open = _open
-        self.high = _high
-        self.low = _low
-        self.close = _close
-        self.volume = _volume
-        self.adj_close = _adj_close
-
-    def __repr__(self):
-        return "({symbol};{date};{open:.2f};{high:.2f};{low:.2f};{close:.2f};{volume};{adj_close:.2f})".format(**self.__dict__)
-
-    def __str__(self):
-        return "{symbol: <6s} {date} {open: >10.2f} {high: >10.2f} {low: >10.2f} {close: >10.2f} {volume: >10d} {adj_close: >10.2f}".format(**self.__dict__)
-
-    def get_tuple(self):
-        return self.symbol, self.date, self.open, self.high, self.low, self.close, self.volume, self.adj_close
-
-
-def adapt_ohlc(ohlc):
-    return ohlc.__repr__()
-
-
-def convert_ohlc(s):
-    s, d, o, h, l, c, v, a = map(float, s.split(";"))
-    return OHLC(s, d, o, h, l, c, v, a)
-
-
-sqlite3.register_adapter(OHLC, adapt_ohlc)
-sqlite3.register_converter("ohlc", convert_ohlc)
-
 
 def upload_price_data(_data):
     '''
@@ -216,8 +183,10 @@ TESTING
 
 if __name__ == '__main__':
     s = 'MSFT'
-    update_price_data(s)
-    db_io.remake_db()
-    update_price_data(s)
-    db_io.dump_db()
+    ts = update_price_data(s)
+    ts = load_price_data(s)
+
+    print(ts)
+
+    # db_io.dump_db()
     db_io.clean_up()

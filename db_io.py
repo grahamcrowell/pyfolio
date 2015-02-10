@@ -29,7 +29,6 @@ zip_rel_path = os.path.join(data_dir_name,zip_name)
 db_zip = os.path.join(bkup_dir_path, zip_name)
 
 
-
 """
 price table
 """
@@ -49,6 +48,7 @@ select_trans_stmt = '''SELECT * FROM trans WHERE {}=?'''.format
 select_trans_stmt = '''SELECT * FROM trans WHERE symbol=?'''
 select_alltrans_stmt = '''SELECT * FROM trans'''
 delete_trans_stmt = '''DROP TABLE trans'''
+
 
 _con = None
 _cur = None
@@ -106,6 +106,7 @@ def con():
         init_db()
         return _con
 
+
 def bkup_db_sql():
     print('\tsaving {} to {}'.format(db_rel_path,sql_rel_path))
     init_db()
@@ -113,6 +114,7 @@ def bkup_db_sql():
     with open(sql_rel_path, 'w') as f:
         for line in con().iterdump():
             f.write('%s\n' % line)
+
 
 def bkup_db_zip():
     print('\tsaving {} to {}'.format(db_rel_path,zip_name))
@@ -125,10 +127,8 @@ def bkup_db_zip():
     os.remove(sql_rel_path)
 
 
-
 def dump_db():
     print('dumping DB file: {} . . .'.format(db_rel_path))
-    
     bkup_db_sql()
     bkup_db_zip()
 
@@ -136,7 +136,5 @@ def dump_db():
 
 if __name__ == '__main__':
     dump_db()
-
-    # mtime = os.path.getmtime(path)
 
 
