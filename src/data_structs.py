@@ -163,7 +163,8 @@ class TimeSeriesTrans(TimeSeries):
     
     def __init__(self, _list=None):
         if _list is None:
-            _list = db_io.cur().execute(db_io.select_alltrans_stmt).fetchall()
+            _list = trans_io.load_trans_data()
+            print(_list)
             super(TimeSeriesTrans, self).__init__(map(lambda tran: Transaction(*tran),_list))
         else:
             super(TimeSeriesTrans, self).__init__(_list)

@@ -1,0 +1,479 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"uplo",
+				"upload_price_data"
+			],
+			[
+				"last",
+				"last_trade_date"
+			],
+			[
+				"do",
+				"download_price_data"
+			],
+			[
+				"get",
+				"get_sp500"
+			],
+			[
+				"curr_",
+				"current_cash"
+			],
+			[
+				"is",
+				"isinstance"
+			],
+			[
+				"Time",
+				"TimeSeries"
+			],
+			[
+				"sql_",
+				"sql_rel_path"
+			],
+			[
+				"bk",
+				"bkup_db_sql"
+			],
+			[
+				"dum",
+				"dump_db"
+			],
+			[
+				"cas",
+				"cash_symbol"
+			],
+			[
+				"ca",
+				"cash_symbol"
+			],
+			[
+				"deposit",
+				"deposit_type"
+			],
+			[
+				"tb_",
+				"tb_lines"
+			],
+			[
+				"__",
+				"__debug__"
+			],
+			[
+				"pdf",
+				"pdf_name"
+			],
+			[
+				"dict",
+				"dict_cursor"
+			],
+			[
+				"re_",
+				"re_open_tag"
+			],
+			[
+				"en",
+				"encode_request"
+			],
+			[
+				"or",
+				"orgins"
+			],
+			[
+				"a",
+				"address"
+			],
+			[
+				"dest",
+				"destinations"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "Packages/User/latex.sublime-build",
+	"command_palette":
+	{
+		"height": 367.0,
+		"selected_items":
+		[
+			[
+				"Snippet: ",
+				"Snippet: #!/usr/bin/env"
+			],
+			[
+				"Snippet: s",
+				"Snippet: New Class"
+			]
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 139.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 Template/Graham Crowell resume/resume.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 Template/Graham Crowell resume/main.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 Template/Graham Crowell cover letter/main.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 Template/Graham Crowell cover letter/coverletter.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-07.QRG RBC/Graham Crowell cover letter/main.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-07.QRG RBC/Graham Crowell cover letter/coverletter.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 RBC Associate Dominion Services/Graham Crowell cover letter/coverletter.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-07.QRG RBC/Graham Crowell resume/resume.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 Template/Graham Crowell resume/Graham Crowell resume.pdf",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 RBC Associate Dominion Services/coverletter.tex",
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/LaTeX/begin{}-end{}.sublime-snippet",
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/User/copy_job_application_template.py",
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/User/coverlettermain.sublime-snippet",
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/User/tmp_snippet",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 Template/Graham Crowell cover letter/Graham Crowell cover letter.pdf",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 RBC Generic/Graham Crowell cover letter/coverletter.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 RBC Generic/Graham Crowell cover letter/main.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 RBC Finance/Graham Crowell cover letter/coverletter.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 RBC Generic/Graham Crowell resume/resume.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 RBC Generic/Graham Crowell resume/main.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-07.QRG RBC/Graham Crowell resume/Graham Crowell resume.pdf",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/trans_io.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/src/trans_io.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/src/db_io.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/data_structs.py",
+		"/Users/grahamcrowell/.bashrc",
+		"/Users/grahamcrowell/Dropbox/resume/RBC job research/designations and software platforms.md",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/pyfolio.config",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/data/sp500.txt",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/unit_testing/test_price_io.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/src/__init__.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/unit_testing/__init__.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/src/main.py",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-07.QRG RBC/Graham Crowell resume/main.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-07.QRG RBC/Additional Qualifications",
+		"/Users/grahamcrowell/Dropbox/pymake/pymake_latex/pymake_latex.py",
+		"/Users/grahamcrowell/Dropbox/MISC/kev/plotting_functions/steps_to_plotting_a_graph.tex",
+		"/Users/grahamcrowell/Dropbox/stock_stat2/code/mysql/stock_db.sql",
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/User/myplugin.py",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-07.QRG RBC/Graham Crowell cover letter/Graham Crowell cover letter.pdf",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/README.md",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/misc_code.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/price_io.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/db_io.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/git_commands.sh",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/data/quant-2015-01-21.sql",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/data/quant.db",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/data/TRANS_CSV_DATA-2015-01-25.csv",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/data/TRANS_CSV_DATA-2015-02-03.csv",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/data/TRANS_CSV_DATA-2015-02-09.csv",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/data/CSV_DATA-2015-02-08.csv",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/data/CSV_DATA-2015-02-09.csv",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-06.RBC Quant Dev/Graham Crowell cover letter/coverletter.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-06.RBC Quant Dev/Graham Crowell resume/resume.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-06.RBC Quant Dev/Graham Crowell cover letter/main.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-06.RBC Quant Dev/Graham Crowell resume/main.tex",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-06.RBC Quant Dev/Graham Crowell cover letter/Graham Crowell cover letter.aux",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-06.RBC Quant Dev/Graham Crowell cover letter/Graham Crowell cover letter.out",
+		"/Users/grahamcrowell/Dropbox/code/batch_dir_mover.txt/dirs.txt",
+		"/Users/grahamcrowell/Dropbox/code/batch_dir_mover.txt/mover.sh",
+		"/Users/grahamcrowell/Dropbox/Kenya/assignment5/population model",
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/User/python.sublime-build",
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Pristine Packages/Python.sublime-package",
+		"/Users/grahamcrowell/Dropbox/shan_rrsp/pyfolio/db_io.py",
+		"/Users/grahamcrowell/Dropbox/shan_rrsp/pyfolio/price_io.py",
+		"/Users/grahamcrowell/Downloads/Highcharts-4.0.4/examples/line-time-series/index.htm",
+		"/Users/grahamcrowell/Dropbox/resume/2015-02-06.RBC Quant Dev/Graham Crowell resume/untitled.html",
+		"/Users/grahamcrowell/Dropbox/stock_stat2/stock_charts/highstock.js",
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+		"/Users/grahamcrowell/Dropbox/IOR Janice/IOR_game/ROOT/experiments/experiment_config_graham_PENLOC=1/results/graham_test_catch_score.csv",
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/User/LaTeX.sublime-settings",
+		"/Users/grahamcrowell/Dropbox/DOCS/MISC/resume/2015-02-06.RBC Quant Dev/Graham Crowell cover letter/coverletter.tex",
+		"/Users/grahamcrowell/Dropbox/DOCS/MISC/resume/2015-02-06.RBC Quant Dev/Quantitative Analyst  Developer - RBC Global Asse",
+		"/Users/grahamcrowell/Dropbox/DOCS/MISC/resume/2015-02-06.RBC Quant Dev/Graham Crowell resume/resume.tex",
+		"/Users/grahamcrowell/Dropbox/DOCS/MISC/autotrust/giant_wooden_badger2.txt",
+		"/Users/grahamcrowell/Dropbox/DOCS/MISC/autotrust/giant_wooden_badger.txt",
+		"/Users/grahamcrowell/Dropbox/DOCS/MISC/autotrust/giant_wooden_badger4.txt",
+		"/Users/grahamcrowell/Dropbox/DOCS/MISC/autotrust/giant_wooden_badger3.txt",
+		"/Users/grahamcrowell/Dropbox/DOCS/Kenya/Question 4: Argue for or against the proposition t",
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/User/latex.sublime-build",
+		"/Users/grahamcrowell/Desktop/latex_project/latex_src.tex",
+		"/Users/grahamcrowell/Dropbox/DOCS/MISC/alana/Personal notes",
+		"/Users/grahamcrowell/Dropbox/DOCS/github_local/pyfolio/writeups/portfolio_targets.tex",
+		"/Users/grahamcrowell/Dropbox/DOCS/github_local/pyfolio/git_commands",
+		"/Users/grahamcrowell/Dropbox/DOCS/github_local/pyfolio/data/TRANS_CSV_DATA-2015-02-03.csv",
+		"/Users/grahamcrowell/Dropbox/DOCS/__npp_cpp/vs_project/npp_handler/npp_handler/npp_handler.cpp",
+		"/usr/local/mysql-5.6.23-osx10.8-x86_64/bin/mysql_config",
+		"/Users/grahamcrowell/Dropbox/DOCS/MISC/autotrust/In:out	From	Date	Message",
+		"/Users/grahamcrowell/Dropbox/DOCS/github_local/springerlink_get/bookmarker_renamer/template_bookmarks.html",
+		"/Users/grahamcrowell/Dropbox/DOCS/github_local/springerlink_get/bookmarker_renamer/SpringerBriefs_Business.html",
+		"/Users/grahamcrowell/Dropbox/DOCS/giant_wooden_badger.txt",
+		"/Users/grahamcrowell/Dropbox/DOCS/github_local/springerlink_get/README.md",
+		"/Users/grahamcrowell/Dropbox/DOCS/decision_support/QandA",
+		"/Users/grahamcrowell/Dropbox/DOCS/shan_rrsp/pyfolio/git_commands",
+		"/Users/grahamcrowell/Dropbox/DOCS/shan_rrsp/pyfolio/README.md",
+		"/Library/Python/2.7/site-packages/PyQt5/sip/QtQuickWidgets/qquickwidget.sip",
+		"/Users/grahamcrowell/Qt/README.txt",
+		"/Users/grahamcrowell/Documents/PyQt-gpl-5.4/What benefits do you bring?",
+		"/Users/grahamcrowell/Dropbox/DOCS/IOR Janice/_IOR_ADAM/python_code/current_version 2/ior_visuals.py",
+		"/Users/grahamcrowell/Documents/Springer/2010 Handbook of Quantitative Finance and Risk Management/Overview of Quantitative Finance and Risk Management Research/2 Investment, Dividend, Financing, and Production Policies- Theory and Implications.pdf",
+		"/Users/grahamcrowell/Documents/Springer/2010 Handbook of Quantitative Finance and Risk Management/Overview of Quantitative Finance and Risk Management Research/Statistics of Financial Markets Exercises and Solutions.pdf",
+		"/Users/grahamcrowell/Documents/Springer/2010 Handbook of Quantitative Finance and Risk Management/Overview of Quantitative Finance and Risk Management Research/Front Matter.pdf",
+		"/Users/grahamcrowell/Documents/Springer/2010 Handbook of Quantitative Finance and Risk Management/Overview of Quantitative Finance and Risk Management Research/SearchResults.csv",
+		"/Users/grahamcrowell/Documents/Springer/2010 Handbook of Quantitative Finance and Risk Management/Overview of Quantitative Finance and Risk Management Research/extract_pdf_name.py",
+		"/Users/grahamcrowell/Documents/Springer/2010 Handbook of Quantitative Finance and Risk Management/Overview of Quantitative Finance and Risk Management Research/Statistics of Financial Markets An Introduction.pdf",
+		"/Users/grahamcrowell/Dropbox/DOCS/IOR Janice/IOR_game/ROOT/experiments/experiment_config_adam/practice5.csv",
+		"/Users/grahamcrowell/Dropbox/DOCS/IOR Janice/IOR_game/ROOT/experiments/experiment_config_adam/config.txt",
+		"/Users/grahamcrowell/Dropbox/DOCS/IOR Janice/_IOR_ADAM/python_code/USE_THIS_VERSION/current_version/ior_visuals.py",
+		"/Users/grahamcrowell/Dropbox/DOCS/IOR Janice/_IOR_ADAM/python_code/USE_THIS_VERSION/current_version/adam_ior_v5.py",
+		"/Users/grahamcrowell/Dropbox/DOCS/shan_rrsp/pyfolio/transactionHistory_all_all_all.csv",
+		"/Users/grahamcrowell/Dropbox/DOCS/shan_rrsp/pyfolio/quant-2015-01-21.sql",
+		"/Users/grahamcrowell/Dropbox/DOCS/shan_rrsp/pyfolio/data/quant-2015-01-22.sql",
+		"/Users/grahamcrowell/Dropbox/DOCS/shan_rrsp/pyfolio/inbox.csv",
+		"/Users/grahamcrowell/Dropbox/DOCS/shan_rrsp/pyfolio/marketclosings.pdf",
+		"/Users/grahamcrowell/Dropbox/DOCS/shan_rrsp/trade_reader/price_data/goog.csv",
+		"/Users/grahamcrowell/PycharmProjects/ROOT/experiments/experiment_config_easy_does_it/results/pleasegod.csv",
+		"/Users/grahamcrowell/PycharmProjects/ROOT/Reward-Magnitude-IOR1.csv",
+		"/Users/grahamcrowell/PycharmProjects/ROOT/experiments/experiment_config_default_stress_test/practice300.csv",
+		"/Users/grahamcrowell/PycharmProjects/ROOT/experiments/experiment_config_default_stress_test/block_abc.csv",
+		"/Users/grahamcrowell/Dropbox/DOCS/IOR Janice/IOR_game/ROOT/experiments/experiment_config_easy_does_it/practice5.csv",
+		"/Users/grahamcrowell/PycharmProjects/google_maps_api/distance_matrix.xml",
+		"/Users/grahamcrowell/Dropbox/DOCS/IOR Janice/IOR_game/ROOT/ior_visuals.py",
+		"/Users/grahamcrowell/Dropbox/DOCS/google_api/distance_matrix/distance_matrix_xml_v2.py",
+		"/Users/grahamcrowell/Dropbox/DOCS/google_api/distance_matrix/distance_matrix_xml.py",
+		"/Users/grahamcrowell/Dropbox/DOCS/google_api/distance_matrix/distance_matrix.html",
+		"/Users/grahamcrowell/Dropbox/DOCS/shan_rrsp/trade_reader/price_data/MSFT 2014-01-19.csv",
+		"/Users/grahamcrowell/Dropbox/DOCS/google_api/distance_matrix/json_request.py",
+		"/Users/grahamcrowell/Dropbox/DOCS/google_api/distance_matrix/collection_print.py"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"/Users/grahamcrowell/Dropbox/resume/2015-02-06.RBC Quant Dev",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"collabo",
+			"bool_or",
+			"pprint",
+			"data[",
+			"data",
+			"?",
+			"*",
+			"params",
+			"REAL",
+			"TEXT",
+			"symbol",
+			"TEXT",
+			"real",
+			"date",
+			"text",
+			"CREATE TABLE IF NOT EXISTS prices (symbol text, date date, open real, high real, low real, close real, volume integer, adj_close real, PRIMARY KEY (symbol, date))",
+			"real",
+			" date",
+			"text",
+			" date",
+			"date",
+			"),",
+			"date",
+			"text",
+			"holdings",
+			"qty_dict",
+			"cash",
+			"daily_qty",
+			"tmp",
+			"curr_dt",
+			"-----------------------------\n",
+			"b",
+			"itertools",
+			"datetime",
+			"collections",
+			"adj_close",
+			"_adj_close",
+			"_volume",
+			"_close",
+			"        ",
+			"_high",
+			"_open",
+			"_date",
+			"_symbol",
+			"trans",
+			"TimeSeriesTrans",
+			"NotIm",
+			"OHLC",
+			"ohlc",
+			"OHLC",
+			"ohlc",
+			"OHLC",
+			"'-{}.",
+			"sql_name",
+			"sql_filename",
+			"db_sql_fullpath",
+			"MERGER",
+			"cash",
+			"merger",
+			"EXCHADJ",
+			"MERGER",
+			"CMR",
+			"2012-11-30",
+			"CMR",
+			"tmp",
+			"book",
+			"deposit_type",
+			", ",
+			"learner",
+			"~\\\\",
+			"opportunity",
+			"/Volumes",
+			"\\medvert",
+			"redef",
+			"console",
+			"projec",
+			"nCLEANING",
+			"print",
+			"experiment",
+			"254700175584",
+			"254720856419",
+			"C",
+			"c",
+			"C",
+			"for",
+			"web",
+			"  ",
+			"for",
+			")$",
+			"ADJUST",
+			"AS Of ",
+			"adjust",
+			"AS of",
+			"please read my email to hana",
+			"high_tone",
+			"/Title (",
+			"/Title",
+			"Title",
+			"2011",
+			"Franke",
+			"www.springer.com",
+			"www.springer.com/series/223",
+			"Stati",
+			"Title",
+			"Investment",
+			"Title(",
+			"Overview of Quantitative Finance and Risk Management Research",
+			"URAN",
+			"New Year",
+			"child",
+			"DistanceMatrixResponse",
+			"row",
+			".group(1)"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"', '",
+			"\\n/Volumes",
+			"row",
+			".groups()"
+		],
+		"reverse": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 263.0
+	},
+	"replace":
+	{
+		"height": 70.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 251.0,
+	"status_bar_visible": true
+}

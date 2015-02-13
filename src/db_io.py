@@ -63,16 +63,12 @@ create_price_stmt = '''CREATE TABLE IF NOT EXISTS prices (symbol text, date date
 delete_price_stmt = '''DROP TABLE prices'''
 
 # sqllite
+# MySQL
 select_price_stmt = '''SELECT * FROM prices WHERE symbol=?'''
-# MySQL
 select_price_stmt = '''SELECT * FROM prices WHERE symbol=%s'''
-# sqllite
 lastup_price_stmt = '''SELECT MAX(date) FROM prices WHERE symbol='''
-# MySQL
 lastup_price_stmt = '''SELECT MAX(date) FROM prices WHERE symbol=%s'''
-# sqllite
 upload_price_stmt = '''INSERT OR IGNORE INTO prices VALUES (?,?,?,?,?,?,?,?)'''
-# MySQL
 upload_price_stmt = '''INSERT IGNORE INTO prices VALUES (%s,%s,%s,%s,%s,%s,%s,%s)'''
 
 """
@@ -81,15 +77,14 @@ transaction table
 create_trans_stmt = '''CREATE TABLE IF NOT EXISTS trans (desc text, symbol text, tran_date date, settle_date date, acct_currency text, type text, qty real, price_currency text, price real, amount real)'''
 upload_trans_stmt = '''INSERT OR IGNORE INTO trans VALUES (?,?,?,?,?,?,?,?,?,?)'''
 upload_trans_stmt = '''INSERT IGNORE INTO trans VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
-select_trans_stmt = '''SELECT * FROM trans WHERE {}=?'''.format
 select_trans_stmt = '''SELECT * FROM trans WHERE symbol=?'''
 select_trans_stmt = '''SELECT * FROM trans WHERE symbol=%s'''
 select_alltrans_stmt = '''SELECT * FROM trans'''
-delete_trans_stmt = '''DROP TABLE trans'''
+# delete_trans_stmt = '''DROP TABLE trans'''
 
 
 _con = None
-_cur = None
+# _cur = None
 
 # sqllite
 def init_db():
@@ -106,20 +101,20 @@ def init_db():
 # MySQL
 def init_db():
     global _con
-    global _cur
+    # global _cur
     if _con is None:
         print('connecting to {}\n'.format(db_name))
         _con = mysql.connector.connect(user='quant', database='stock_stat', password='2and2is5',buffered=True)
-    if _cur is None:
-        _cur = _con.cursor()
+    # if _cur is None:
+        # _cur = _con.cursor()
 
 
 def remake_db():
     print('* * * remaking db'.format(db_name))
     user = raw_input('\tall database data will be lost.\n\t\tENTER T to confirm')
     if user.upper() == 'T':
-        cur().execute(delete_price_stmt)
-        cur().execute(delete_trans_stmt)
+        # cur().execute(delete_price_stmt)
+        # cur().execute(delete_trans_stmt)
         print('\tdatabase deleted')
         init_db()
         print('\tdatabase rebuilt')
@@ -187,14 +182,14 @@ def dump_db():
     pass
     # TODO !!!!!!!!
 
-def foo():
-    cur_dir = os.getcwd()
 
+init_db()
 
 if __name__ == '__main__':
     # print(con())
     # print(cur())
     # dump_db()
-    foo()
+    # foo()
+    pass
 
 

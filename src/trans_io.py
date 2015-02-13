@@ -206,35 +206,45 @@ def symbol_fill(_arr):
     cnt2 = np.sum(arr['symbol'] == ' ')
     # print('{} symbols still empty'.format(cnt2))
     return arr
+
+def upload_trans_list(_data):
+    db_io.cur().executemany(db_io.upload_trans_stmt, _data)
+
+def upload_trans_array(_data):
+    upload_trans_list(_data.tolist())
+
 def upload_trans_data(_data):
     '''
     INSERT OR IGNORE upload to database trans table
     :param _data: list of tuples which represent rows
     :return: None
     '''
-    print(type(_data))
-    print(_data)
-    print('\tuploading {} trans data'.format(len(_data)))
-    print(_data[0])
-    db_io.cur().executemany(db_io.upload_trans_stmt, _data.tolist()) 
-    print(db_io.cur())
+    if isinstance(_data, list):
+        upload_trans_list(_data)
+    elif isinstance(_data, np.ndarray):
+        upload_trans_array(_data)
+    # print(type(_data))
+    # print(_data)
+    # print('\tuploading {} trans data'.format(len(_data)))
+    # print(_data[0])
+    # db_io.cur().executemany(db_io.upload_trans_stmt, _data.tolist()) 
+    # print(db_io.cur())
 
 
-def load_trans_data(**darg):
-    key, val = darg.items()[0]
-    sql_stmt = db_io.select_trans_stmt(key), (val,)
-    print(sql_stmt)
-    return db_io.cur().execute(unicode(sql_stmt)).fetchall()
+# def load_trans_data(**darg):
+#     key, val = darg.items()[0]
+#     sql_stmt = db_io.select_trans_stmt(key), (val,)
+#     print(sql_stmt)
+#     return db_io.cur().execute(unicode(sql_stmt)).fetchall()
 
-def load_trans_data(_symbol=None):
-    if _symbol is None:
-        tmp = db_io.cur().execute(db_io.select_alltrans_stmt)
-        if tmp is not None:
-            return tmp.fetchall()
+def load_trans_data():
+    print('loading all trans data')
+    tmp = db_io.con().cursor()
+    tmp.execute(db_io.select_alltrans_stmt)
+    if tmp is not None:
+        return tmp.fetchall()
     else:
-        tmp = db_io.cur().execute(db_io.select_trans_stmt, (_symbol,))
-        if tmp is not None:
-            return tmp.fetchall()
+        raise Exception('no trans data recieved from db')
 
 def np_load_trans_data(_symbol=None):
     if _symbol is None:
@@ -292,8 +302,8 @@ def rebuild_trans_data():
     print('* * * remaking trans table')
     print('\tall trans data will be lost.\n\t\tENTER T to confirm')
     if user.upper() == 'T':
-        db_io.cur().execute(db_io.delete_trans_stmt)
-        db_io.con().commit()
+        # db_io.cur().execute(db_io.delete_trans_stmt)
+        # db_io.con().commit()
         print('\ttable deleted')
         db_io.init_db()
         ts = load_rrsp_csv_trans()
@@ -303,9 +313,10 @@ def rebuild_trans_data():
         print('\ttable rebuilt and re-uploaded')
         print('\tsave data to csv?.\n\t\tENTER T to confirm')
         if user.upper() == 'T':
-            save_rrsp_csv_trans(ts)
-            np_ts = np_load_trans_data()
-            save_clean_csv(np_ts)
+            # save_rrsp_csv_trans(ts)
+            # np_ts = np_load_trans_data()
+            # save_clean_csv(np_ts)
+            pass
         else:
             print('\tCSV not saved')
     else:
@@ -319,28 +330,36 @@ def test():
         print(len(arr), type(arr))
     arr = symbol_fill(arr)
     # TEST DATA LOADERS
-    print('upload???')
     upload_trans_data(arr)
     arr = np_load_trans_data(_symbol='RIM')
     if arr is not None:
         print(len(arr), type(arr))
+    else:
+        raise Exception()
     arr = np_load_trans_data()
     if arr is not None:
         print(len(arr), type(arr))
+    else:
+        raise Exception()
     arr = np_load_trans_data()
     if arr is not None:
         types = np.unique(arr['type'])
         print(types)
-    tmp = load_trans_data()
+    else:
+        raise Exception()
+    data = load_trans_data()
+    if data is not None:
+        print('trans table loaded to memory ({} rows)'.format(len(data)))
+    else:
+        raise Exception()
 
 if __name__ == '__main__':
-    # csv_data = ['ISHARES 1 TO 3 YEAR TREASURY BOND ETF DIST      ON       4 SHS REC 12/29/14 PAY 12/31/14      , ,31-Dec-2014,31-Dec-2014,CAD,CASH DIV,0.00,CAD,0.000,0.15,','ISHARES 1 TO 3 YEAR TREASURY BOND ETF DIST      ON       4 SHS REC 12/29/14 PAY 12/31/14      , ,31-Dec-2014,31-Dec-2014,CAD,CASH DIV,0.00,CAD,0.000,0.15,']
-    # arr = np.zeros(2, dtype=db_tran_dtype)
+    # rebuild_trans_data()
 
+    data = load_trans_data()
+    print(data)
 
-
-
-    test()
+    # test()
     # print(np.version.version)
     # print(dir(np))
     # print(np.__name__)

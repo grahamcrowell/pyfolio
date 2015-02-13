@@ -2,9 +2,8 @@
 
 ### TODO: 
 
-1. CONVERT to mysql
-..* branch from git hub master?
-..* parrallelize
+1. CONVERT to mysql (messy but done)
+..* Rework data access model
 
 2. CONSOLIDATE trans_io code
 ..* convert to pure python, remove numpy dependance

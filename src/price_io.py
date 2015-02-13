@@ -39,7 +39,9 @@ def upload_price_data(_data):
 
 # sqllite and MySQL
 def price_data_cur(_symbol):
-    return db_io.con().cursor().execute(db_io.select_price_stmt, (_symbol,))
+    tmp = db_io.con().cursor()
+    tmp.execute(db_io.select_price_stmt, (_symbol,))
+    return tmp
 
 # sqllite
 def load_price_data(_symbol):
@@ -235,6 +237,10 @@ def test_all():
 
 
 if __name__ == '__main__':
-    test_all()
+    # test_all()
+
+    data = load_price_data('MSFT')
+    print(data)
+
     db_io.clean_up()
 
