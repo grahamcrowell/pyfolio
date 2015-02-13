@@ -4,8 +4,28 @@
 		"selected_items":
 		[
 			[
-				"uplo",
+				"as",
+				"asarray"
+			],
+			[
+				"up",
+				"update_price_many"
+			],
+			[
+				"sp",
+				"sp500"
+			],
+			[
+				"upda",
 				"upload_price_data"
+			],
+			[
+				"local",
+				"localhost"
+			],
+			[
+				"uplo",
+				"upload_trans_list"
 			],
 			[
 				"last",
@@ -96,10 +116,10 @@
 	"buffers":
 	[
 	],
-	"build_system": "Packages/User/latex.sublime-build",
+	"build_system": "Packages/User/python.sublime-build",
 	"command_palette":
 	{
-		"height": 367.0,
+		"height": 187.0,
 		"selected_items":
 		[
 			[
@@ -128,6 +148,17 @@
 	},
 	"file_history":
 	[
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/User/sql.sublime-build",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/src/price_io.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/src/trans_io.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/src/data_structs.py",
+		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/User/python.sublime-build",
+		"/Users/grahamcrowell/run_me.sh",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/src/stock_stat_ddl.sql",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/src/db_io.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/setting.config",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/main.py",
+		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/README.md",
 		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 Template/Graham Crowell resume/resume.tex",
 		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 Template/Graham Crowell resume/main.tex",
 		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 Template/Graham Crowell cover letter/main.tex",
@@ -150,8 +181,6 @@
 		"/Users/grahamcrowell/Dropbox/resume/2015-02-12 RBC Generic/Graham Crowell resume/main.tex",
 		"/Users/grahamcrowell/Dropbox/resume/2015-02-07.QRG RBC/Graham Crowell resume/Graham Crowell resume.pdf",
 		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/trans_io.py",
-		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/src/trans_io.py",
-		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/src/db_io.py",
 		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/data_structs.py",
 		"/Users/grahamcrowell/.bashrc",
 		"/Users/grahamcrowell/Dropbox/resume/RBC job research/designations and software platforms.md",
@@ -168,7 +197,6 @@
 		"/Users/grahamcrowell/Dropbox/stock_stat2/code/mysql/stock_db.sql",
 		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/User/myplugin.py",
 		"/Users/grahamcrowell/Dropbox/resume/2015-02-07.QRG RBC/Graham Crowell cover letter/Graham Crowell cover letter.pdf",
-		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/README.md",
 		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/misc_code.py",
 		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/price_io.py",
 		"/Users/grahamcrowell/Dropbox/github_local/pyfolio/db_io.py",
@@ -189,7 +217,6 @@
 		"/Users/grahamcrowell/Dropbox/code/batch_dir_mover.txt/dirs.txt",
 		"/Users/grahamcrowell/Dropbox/code/batch_dir_mover.txt/mover.sh",
 		"/Users/grahamcrowell/Dropbox/Kenya/assignment5/population model",
-		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Packages/User/python.sublime-build",
 		"/Users/grahamcrowell/Library/Application Support/Sublime Text 2/Pristine Packages/Python.sublime-package",
 		"/Users/grahamcrowell/Dropbox/shan_rrsp/pyfolio/db_io.py",
 		"/Users/grahamcrowell/Dropbox/shan_rrsp/pyfolio/price_io.py",
@@ -248,14 +275,7 @@
 		"/Users/grahamcrowell/PycharmProjects/ROOT/experiments/experiment_config_default_stress_test/practice300.csv",
 		"/Users/grahamcrowell/PycharmProjects/ROOT/experiments/experiment_config_default_stress_test/block_abc.csv",
 		"/Users/grahamcrowell/Dropbox/DOCS/IOR Janice/IOR_game/ROOT/experiments/experiment_config_easy_does_it/practice5.csv",
-		"/Users/grahamcrowell/PycharmProjects/google_maps_api/distance_matrix.xml",
-		"/Users/grahamcrowell/Dropbox/DOCS/IOR Janice/IOR_game/ROOT/ior_visuals.py",
-		"/Users/grahamcrowell/Dropbox/DOCS/google_api/distance_matrix/distance_matrix_xml_v2.py",
-		"/Users/grahamcrowell/Dropbox/DOCS/google_api/distance_matrix/distance_matrix_xml.py",
-		"/Users/grahamcrowell/Dropbox/DOCS/google_api/distance_matrix/distance_matrix.html",
-		"/Users/grahamcrowell/Dropbox/DOCS/shan_rrsp/trade_reader/price_data/MSFT 2014-01-19.csv",
-		"/Users/grahamcrowell/Dropbox/DOCS/google_api/distance_matrix/json_request.py",
-		"/Users/grahamcrowell/Dropbox/DOCS/google_api/distance_matrix/collection_print.py"
+		"/Users/grahamcrowell/PycharmProjects/google_maps_api/distance_matrix.xml"
 	],
 	"find":
 	{
@@ -275,6 +295,18 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"db_tran_dtype",
+			"' ",
+			", '",
+			"',",
+			", '",
+			"desc",
+			"arg",
+			"FILE",
+			"np_load_trans_data",
+			"'",
+			" = ",
+			"_con",
 			"collabo",
 			"bool_or",
 			"pprint",

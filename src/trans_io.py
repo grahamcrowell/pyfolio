@@ -17,7 +17,7 @@ print('csv transaction history file:\n\t{}\n'.format(rrsp_csv_name))
 rrsp_csv_file = os.path.join(db_io.data_dir_path, rrsp_csv_name)
 assert os.path.isfile(rrsp_csv_file)
 
-db_tran_dtype = np.dtype(
+tran_dtype = np.dtype(
     [('note', np.str_, 100), ('symbol', np.str_, 10), ('trans_date', 'datetime64[D]'), ('settle_date', 'datetime64[D]'), ('acct_currency', np.str_, 6), ('type', np.str_, 15), ('qty', np.float32), ('price_currency', np.str_, 6), ('price', np.float32), ('amount', np.float32)])
 rrsp_tran_dtype = np.dtype(
     [('desc', np.str_, 100), ('symbol', np.str_, 10), ('trans_date', np.str_, 10), ('settle_date', np.str_, 10), ('acct_currency', np.str_, 6), ('type', np.str_, 15), ('qty', np.float32),
@@ -30,12 +30,6 @@ rrsp_date_format = "%d-%b-%Y"
 # 2014-07-02
 iso_date_format = "%Y-%m-%d"
 iso_datetime_format = "%Y-%m-%d %H:%M:%S"
-
-def pprint(_arr):
-    if _arr.dtype is not rrsp_tran_dtype:
-        return repr(_arr)
-    else:
-        return repr(_arr)
 
 
 
@@ -67,34 +61,13 @@ def parse_rrsp_line(_line):
     return tuple(tkns)
 
 def load_rrsp_csv_trans(_full_path=rrsp_csv_file):
-    # todo convert to functional style
-    # sqllite / numpy 1.6
-    arr = np.zeros(max_rrsp_transaction_cnt, dtype=rrsp_tran_dtype)
-    # MySQL / numpy 1.7
-    arr = np.zeros(max_rrsp_transaction_cnt, dtype=db_tran_dtype)
-    _file = open(_full_path)
-    _file.readline()
-    i = 0
-    for line in _file:
-        # print(line)
-        rrsp_line = tuple(parse_rrsp_line(line))
-        # print(rrsp_line)
-        arr[i] = rrsp_line[0:len(rrsp_line) - 1]
-        i += 1
-    _file.close()
-    return arr[0:i]
-
-def load_rrsp_csv_trans(_full_path=rrsp_csv_file):
     print('loading rrsp trans data from:\n\t{}'.format(_full_path))
     with open(_full_path,'r') as rrsp_csv:
         trans = list(map(lambda line: parse_rrsp_line(line), rrsp_csv.readlines()[1:]))
-    arr = np.array(trans, dtype=db_tran_dtype)
+    arr = np.array(trans, dtype=tran_dtype)
     print('\t{} transactions loaded'.format(len(arr)))
     return arr
     
-
-
-
 
 def voodoo_fill(_arr, sub_len=3):
     """
@@ -134,7 +107,6 @@ def voodoo_fill(_arr, sub_len=3):
     cnt2 = np.sum(_arr['symbol'] == ' ')
     print('\t\t{} symbols added ({} still empty)'.format(cnt - cnt2, cnt2))
     return _arr
-
 
 def ad_hoc_fill(_arr):
     cnt = np.sum((_arr['symbol'] == ' '))
@@ -195,7 +167,6 @@ def ad_hoc_fill(_arr):
     print('\t\t{} symbols added ({} still empty)'.format(cnt - cnt2, cnt2))
     return _arr
 
-
 def symbol_fill(_arr):
     # todo handle remaining empty symbol rows
     print('symbol fill')
@@ -207,35 +178,23 @@ def symbol_fill(_arr):
     # print('{} symbols still empty'.format(cnt2))
     return arr
 
-def upload_trans_list(_data):
-    db_io.cur().executemany(db_io.upload_trans_stmt, _data)
-
-def upload_trans_array(_data):
-    upload_trans_list(_data.tolist())
-
 def upload_trans_data(_data):
     '''
-    INSERT OR IGNORE upload to database trans table
-    :param _data: list of tuples which represent rows
+    INSERT IGNORE upload to database trans table
+    :param _data: list of tuples or np.array which represent rows
     :return: None
     '''
     if isinstance(_data, list):
-        upload_trans_list(_data)
+        db_io.cur().executemany(db_io.upload_trans_stmt, _data)
     elif isinstance(_data, np.ndarray):
-        upload_trans_array(_data)
+        db_io.cur().executemany(db_io.upload_trans_stmt, _data.tolist())
+        
     # print(type(_data))
     # print(_data)
     # print('\tuploading {} trans data'.format(len(_data)))
     # print(_data[0])
     # db_io.cur().executemany(db_io.upload_trans_stmt, _data.tolist()) 
     # print(db_io.cur())
-
-
-# def load_trans_data(**darg):
-#     key, val = darg.items()[0]
-#     sql_stmt = db_io.select_trans_stmt(key), (val,)
-#     print(sql_stmt)
-#     return db_io.cur().execute(unicode(sql_stmt)).fetchall()
 
 def load_trans_data():
     print('loading all trans data')
@@ -246,57 +205,6 @@ def load_trans_data():
     else:
         raise Exception('no trans data recieved from db')
 
-def np_load_trans_data(_symbol=None):
-    if _symbol is None:
-        tmp = db_io.cur().execute(db_io.select_alltrans_stmt)
-        if tmp is not None:
-            return np.array(tmp.fetchall(), dtype=db_tran_dtype)
-    else:
-        tmp = db_io.cur().execute(db_io.select_trans_stmt, (_symbol,))
-        if tmp is not None:
-            return np.array(tmp, dtype=db_tran_dtype)
-        
-
-
-def dtype2csv(row):
-    # ISHARES 1 TO 3 YEAR TREASURY BOND ETF DIST      ON       4 SHS REC 12/29/14 PAY 12/31/14      , ,31-Dec-2014,31-Dec-2014,CAD,CASH DIV,0.00,CAD,0.000,0.15,
-    tkns = row.split(',')
-    tran_date_str = datetime.datetime.strptime(tkns[2], iso_date_format).date().strftime(rrsp_date_format)
-    sett_date_str = datetime.datetime.strptime(tkns[3], iso_date_format).date().strftime(rrsp_date_format)
-    line = '{},{},{},{},{},{},{:.2f},{},{:.3f},{:.2f}'.format(tkns[0], tkns[1], tran_date_str, sett_date_str, tkns[4], tkns[5], float(tkns[6]), tkns[7], float(tkns[8]), float(tkns[9]))
-    return line
-
-
-def save_rrsp_csv_trans(_arr):
-    out_rrsp_csv_file = os.path.join(db_io.data_dir_path, 'TRANS_CSV_DATA-{}.csv'.format(datetime.date.today().strftime(iso_date_format)))
-    with open(out_rrsp_csv_file, 'w') as csv_file:
-        csv_file.write(transaction_header + '\n')
-        for tran in _arr:
-            inline = '{},{},{},{},{},{},{},{},{},{}'.format(*tran.tolist())
-            outline = dtype2csv(inline) + '\n'
-            csv_file.write(outline)
-    print('\tdata saved to CSV:\n\t\t{}'.format(out_rrsp_csv_file))
-
-def dtype2cleancsv(row):
-    # ISHARES 1 TO 3 YEAR TREASURY BOND ETF DIST      ON       4 SHS REC 12/29/14 PAY 12/31/14      , ,31-Dec-2014,31-Dec-2014,CAD,CASH DIV,0.00,CAD,0.000,0.15,
-    tkns = row.split(',')
-    # print(tkns)
-    tran_date_str = tkns[2]
-    tran_date_str = datetime.datetime.strptime(tkns[2], iso_datetime_format).date().strftime(rrsp_date_format)
-    sett_date_str = tkns[3]
-    sett_date_str = datetime.datetime.strptime(tkns[3], iso_datetime_format).date().strftime(rrsp_date_format)
-    line = '{},{},{},{},{},{:.2f},{},{:.3f},{:.2f}'.format(tkns[1], tran_date_str, sett_date_str, tkns[4], tkns[5], float(tkns[6]), tkns[7], float(tkns[8]), float(tkns[9]))
-    return line
-
-def save_clean_csv(_arr):
-    out_rrsp_csv_file = os.path.join(db_io.data_dir_path, 'CSV_DATA-{}.csv'.format(datetime.date.today().strftime(iso_date_format)))
-    with open(out_rrsp_csv_file, 'w') as csv_file:
-        csv_file.write(transaction_header + '\n')
-        for tran in _arr:
-            inline = '{},{},{},{},{},{},{},{},{},{}'.format(*tran.tolist())
-            outline = dtype2cleancsv(inline) + '\n'
-            csv_file.write(outline)
-    print('\tdata saved to CSV:\n\t\t{}'.format(out_rrsp_csv_file))
 
 def rebuild_trans_data():
     print('* * * remaking trans table')
@@ -322,7 +230,7 @@ def rebuild_trans_data():
     else:
         print('\ttable not deleted, left as is')
 
-
+# TODO informative exception messages
 def test():
     pass
     arr = load_rrsp_csv_trans()

@@ -9,6 +9,7 @@ import db_io
 import trans_io
 import price_io
 
+import numpy as np
 
 """
 Containers for time series data
@@ -76,6 +77,9 @@ class TimeSeries(list):
     def names(cls):
         raise NotImplementedError()
 
+    def asarray(self):
+        raise NotImplementedError()
+
 
 class OHLC(Datum):
     __col_names = ['symbol', 'date', 'open', 'high', 'low', 'close', 'volume', 'adj_close']
@@ -98,8 +102,8 @@ class OHLC(Datum):
     def __str__(self):
         return "{symbol: <7s} {date} {open: >10.2f} {high: >10.2f} {low: >10.2f} {close: >10.2f} {volume: >10d} {adj_close: >10.2f}".format(**self.__dict__)
 
-    # def get_tuple(self):
-        return self.symbol, self.date, self.open, self.high, self.low, self.close, self.volume, self.adj_close
+    def astuple(self):
+        return (self.symbol, self.date, self.open, self.high, self.low, self.close, self.volume, self.adj_close)
 
 
 class TimeSeriesPrices(TimeSeries):
@@ -120,13 +124,16 @@ class TimeSeriesPrices(TimeSeries):
         price_data = price_io.update_price_data(symbol)
         return cls(price_data)
 
+    def asarray(self):
+        return np.array(list(map(lambda price: price.astuple(),self)),dtype=price_io.price_dtype)
+
 
 class Transaction(Datum):
-    __col_names = ['desc', 'symbol', 'trans_date', 'settle_date', 'acct_currency', 'type', 'qty', 'price_currency', 'price', 'amount']
+    __col_names = ['note', 'symbol', 'trans_date', 'settle_date', 'acct_currency', 'type', 'qty', 'price_currency', 'price', 'amount']
     
-    def __init__(self, desc, symbol, trans_date, settle_date, acct_currency, type, qty, price_currency, price, amount):
+    def __init__(self, note, symbol, trans_date, settle_date, acct_currency, type, qty, price_currency, price, amount):
         Datum.__init__(self,year=trans_date.year,month=trans_date.month,day=trans_date.day, dpt=amount)
-        self.desc = str(desc)
+        self.note = str(note)
         self.symbol = str(symbol)
         self.trans_date = trans_date
         self.settle_date = settle_date
@@ -159,12 +166,15 @@ class Transaction(Datum):
     def names(cls):
         return cls.__col_names
 
+    def astuple(self):
+        # return self.
+        return self.note, self.symbol, self.trans_date, self.settle_date, self.acct_currency, self.type, self.qty, self.price_currency, self.price, self.amount
+
 class TimeSeriesTrans(TimeSeries):
     
     def __init__(self, _list=None):
         if _list is None:
             _list = trans_io.load_trans_data()
-            print(_list)
             super(TimeSeriesTrans, self).__init__(map(lambda tran: Transaction(*tran),_list))
         else:
             super(TimeSeriesTrans, self).__init__(_list)
@@ -226,28 +236,35 @@ class TimeSeriesTrans(TimeSeries):
         # TODO: calculate cash
         pass 
 
+    def asarray(self):
+        return np.array(list(map(lambda tran: tran.astuple(),self)),dtype=trans_io.tran_dtype)
 
 
 def trans_foo():
     ts = TimeSeriesTrans()
-    # print(ts['desc'])
+    # print(ts['note'])
     # print(ts[0])
     # print(ts)
     # ts.holdings(symbol='RY')
     ts.init_time_series()
-    # print(ts.init_time_series_ts)
     for dt,holdings in ts.init_time_series().items():
         print('{}'.format(dt))
         for sym,qty in holdings.items():
-            print('\t{: <7s} {: >5.0f}'.format(sym,qty))
+            print('{}  {}'.format(sym,qty))
+
+    arr = ts.asarray()
+    print(arr)
+    print(type(arr))
+    
+    s = 'MSFT'
+    ts = TimeSeriesPrices(s)
+    arr = ts.asarray()
+    print(arr)
+    print(type(arr))
 
 
 if __name__ == '__main__':
     trans_foo()
-    # ts = TimeSeriesTrans()
-    # s = 'MSFT'
-    # ts = TimeSeriesPrices(s)
-    # print(ts)
     pass
 
 
