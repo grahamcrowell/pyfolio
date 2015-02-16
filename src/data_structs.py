@@ -5,6 +5,7 @@ import itertools
 import collections
 from operator import itemgetter
 dict = collections.OrderedDict
+
 import db_io
 import trans_io
 import price_io
@@ -14,7 +15,6 @@ import numpy as np
 """
 Containers for time series data
 """
-
 
 class Datum(object):
     """ base class for time series data point """
@@ -51,7 +51,6 @@ class Datum(object):
     def names(cls):
         return cls.__col_names
 
-
 class TimeSeries(list):
     """ base class for time series data container """
     def __init__(self, _list=None):
@@ -80,7 +79,6 @@ class TimeSeries(list):
     def asarray(self):
         raise NotImplementedError()
 
-
 class OHLC(Datum):
     __col_names = ['symbol', 'date', 'open', 'high', 'low', 'close', 'volume', 'adj_close']
    
@@ -105,7 +103,6 @@ class OHLC(Datum):
     def astuple(self):
         return (self.symbol, self.date, self.open, self.high, self.low, self.close, self.volume, self.adj_close)
 
-
 class TimeSeriesPrices(TimeSeries):
 
     def __init__(self, arg=None):
@@ -126,7 +123,6 @@ class TimeSeriesPrices(TimeSeries):
 
     def asarray(self):
         return np.array(list(map(lambda price: price.astuple(),self)),dtype=price_io.price_dtype)
-
 
 class Transaction(Datum):
     __col_names = ['note', 'symbol', 'trans_date', 'settle_date', 'acct_currency', 'type', 'qty', 'price_currency', 'price', 'amount']
@@ -250,7 +246,7 @@ def trans_foo():
     for dt,holdings in ts.init_time_series().items():
         print('{}'.format(dt))
         for sym,qty in holdings.items():
-            print('{}  {}'.format(sym,qty))
+            print(' {: >6s} {: >5.0f}'.format(sym,qty))
 
     arr = ts.asarray()
     print(arr)

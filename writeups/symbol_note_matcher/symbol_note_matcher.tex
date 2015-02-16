@@ -1,0 +1,10 @@
+A transaction \T is an object consisting of
+\begin{description}
+	\item[$s$] a symbol
+	\item[$w_i$] a sequence of words, $i=1,2,\ldots,n$
+	\item[$t$] a enum "type"
+\end{description}
+
+We are given a sequence of transactions $(\T)$ where the symbol is missing.  This algorithm will match transactions with missing symbols to transactions with similar sequences of words.
+
+Let $f(s)=\{\T_s\}$ be the set of all \T with symbol $s$
