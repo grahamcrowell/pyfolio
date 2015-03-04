@@ -1,0 +1,55 @@
+brew install --with-mysql qt5
+==> Installing qt5 dependency: mysql
+==> Downloading https://homebrew.bintray.com/bottles/mysql-5.6.23.mavericks.bott
+Already downloaded: /Library/Caches/Homebrew/mysql-5.6.23.mavericks.bottle.tar.gz
+==> Pouring mysql-5.6.23.mavericks.bottle.tar.gz
+==> Caveats
+A "/etc/my.cnf" from another install may interfere with a Homebrew-built
+server starting up correctly.
+
+To connect:
+    mysql -uroot
+
+To have launchd start mysql at login:
+    ln -sfv /usr/local/opt/mysql/*.plist ~/Library/LaunchAgents
+Then to load mysql now:
+    launchctl load ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
+Or, if you don't want/need launchctl, you can just run:
+    mysql.server start
+==> Summary
+🍺  /usr/local/Cellar/mysql/5.6.23: 9686 files, 339M
+==> Installing qt5
+==> Downloading https://download.qt.io/official_releases/qt/5.4/5.4.1/single/qt-
+Already downloaded: /Library/Caches/Homebrew/qt5-5.4.1.tar.xz
+==> ./configure -prefix /usr/local/Cellar/qt5/5.4.1 -system-zlib -qt-libpng -qt-
+==> make
+==> make install
+==> Caveats
+We agreed to the Qt opensource license for you.
+If this is unacceptable you should uninstall.
+
+This formula is keg-only, which means it was not symlinked into /usr/local.
+
+Qt 5 conflicts Qt 4 (which is currently much more widely used).
+
+Generally there are no consequences of this for you. If you build your
+own software and it requires this formula, you'll need to add to your
+build variables:
+
+    LDFLAGS:  -L/usr/local/opt/qt5/lib
+    CPPFLAGS: -I/usr/local/opt/qt5/include
+
+
+.app bundles were installed.
+Run `brew linkapps qt5` to symlink these to /Applications.
+==> Summary
+🍺  /usr/local/Cellar/qt5/5.4.1: 6394 files, 289M, built in 156.3 minutes
+Shannons-MacBook-Pro:~ grahamcrowell$ brew linkapps qt5
+Linking /usr/local/opt/qt5/Assistant.app
+Linking /usr/local/opt/qt5/Designer.app
+Linking /usr/local/opt/qt5/Linguist.app
+Linking /usr/local/opt/qt5/pixeltool.app
+Linking /usr/local/opt/qt5/qdbusviewer.app
+Linking /usr/local/opt/qt5/qml.app
+Linking /usr/local/opt/qt5/QMLViewer.app
+Finished linking. Find the links under /Applications.
